@@ -1,0 +1,5 @@
+apps:
+  - name: ascthem-dashboard
+    script: npx
+    interpreter: none
+    args: serve -s build -l 3000
