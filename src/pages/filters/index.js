@@ -32,6 +32,7 @@ import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import Autocomplete from '@mui/material/Autocomplete';
+import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 
 import { styled } from '@mui/material/styles'
@@ -177,6 +178,7 @@ const Batches = () => {
         // const response=await axios.get(`${BASE_URL}/states`);
         // setStates(response.data)
         setStates(statesData)
+        console.log(statesData)
         setFilteredStates(statesData.slice(0,20))
         }
         catch(e){
@@ -244,11 +246,11 @@ const Batches = () => {
   endpoint:selectedBatch[0].endpoint,
   senderEmail:selectedBatch[0].senderEmail,
   subject:selectedBatch[0].subject,
-  city:selectedBatch[0].city,
-  state:selectedBatch[0].state,
-  specialization:selectedBatch[0].specialization,
+  city:selectedBatch[0].city.split(',').map((value)=>value)
+  ,
+  state:selectedBatch[0].state.split(',').map((value)=>value),
+  specialization:selectedBatch[0].specialization.split(',').map((value)=>value),
   country:selectedBatch[0].country,
-  school:selectedBatch[0].school
   })
   }
 
@@ -304,10 +306,10 @@ const Batches = () => {
       flex: 0.2,
       minWidth: 140,
       headerName: 'Record Count',
-      field: '',
+      field: 'count',
       renderCell: params => (
         <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.id}
+          {params.row.count}
         </Typography>
       )
     },
@@ -351,18 +353,16 @@ const Batches = () => {
     endpoint:'',
     senderEmail:'',
     subject:'',
-    city:'',
-    state:'',
-    specialization:'',
+    city:[],
+    state:[],
+    specialization:[],
     country:'',
-    school:''
     })
   }
 
   const handleSubmit=async(e)=>{
     e.preventDefault()
     handleClose()
-
     await axios.post(`${BASE_URL}/batch`,{...state},{headers:{
       Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
     }})
@@ -404,6 +404,24 @@ const Batches = () => {
     );
     setFilteredSpecializations(filteredOptions);
   }
+
+
+  const handleMultiState=(value,key)=>{
+    setState({
+      ...state,
+    [key]:value
+    })
+  }
+
+  const renderTags = (value, getTagProps) =>
+  value.map((option, index) => (
+    <Chip
+      key={index}
+      label={option}
+      {...getTagProps({ index })}
+      style={{ margin: '1px' }} // Customize the margin here
+    />
+  ));
 
   const handleSearchTextChange = (event) => {
     const searchText = event.target.value;
@@ -452,7 +470,7 @@ const Batches = () => {
         }}
       >
            <form onSubmit={isUpdate?handleUpdate:handleSubmit} >
-        <DialogTitle id='alert-dialog-title'>{isUpdate?'View Batch':'Create New Batch'}</DialogTitle>
+        <DialogTitle id='alert-dialog-title'>{isUpdate?'View Filters':'Create New Filter'}</DialogTitle>
         <DialogContent>
           <CardContent>
             <Grid container>
@@ -479,6 +497,7 @@ const Batches = () => {
                          onChange={handleSearchSender}
                          label="Select an sender"
                          variant="outlined"
+                         required
                          inputProps={{
                              ...params.inputProps,
                         }}
@@ -497,6 +516,7 @@ const Batches = () => {
                      <TextField
                          {...params}
                          onChange={handleSearchSubject}
+                         required
                          label="Select an template"
                          variant="outlined"
                          inputProps={{
@@ -509,11 +529,14 @@ const Batches = () => {
             <FormControl sx={{ ml:15 ,mt: 6,width:200 }}>
             <Autocomplete
                 disabled={isUpdate}
-                //  defaultValue={state.city}
-                 value={{label:state.city,value:state.city}}
-                 onChange={(e,value)=>handleOptionChange(e,value,'city')}
-                 options={filteredCities?.map(item =>({value: item.name, label: item.name}))}  
-                 getOptionLabel={(option) => option.label}
+                multiple
+
+                 defaultValue={isUpdate?state.city:[]}
+                 onChange={(e,values)=>handleMultiState(values,'city')}
+                 options={filteredCities?.map(item => item.name)}  
+                 getOptionLabel={(option) => option}
+                 renderTags={renderTags}
+                 clearIcon={null}
                  renderInput={(params) => (
                      <TextField
                          {...params}
@@ -530,12 +553,18 @@ const Batches = () => {
 
             <FormControl sx={{ ml:7 ,mt: 6,width:200 }}>
             <Autocomplete
+            multiple
                 disabled={isUpdate}
-                //  defaultValue={state.city}
-                 value={{label:state.state,value:state.state}}
-                 onChange={(e,value)=>handleOptionChange(e,value,'state')}
-                 options={filteredStates?.map(item =>({value: item.name, label: item.abbreviation}))}  
-                 getOptionLabel={(option) => option.label}
+                
+                defaultValue={isUpdate?state.state:[]}
+                id="tags-standard"
+                //  value={state.state}
+                 onChange={(e,values)=>handleMultiState(values,"state")}
+                 //onChange={(e,value)=>handleOptionChange(e,value,'state')}
+                 options={filteredStates?.map(item=>item.abbreviation)}  
+                  getOptionLabel={(option) => option}
+                  renderTags={renderTags}
+                  clearIcon={null}
                  renderInput={(params) => (
                      <TextField
                          {...params}
@@ -550,7 +579,7 @@ const Batches = () => {
                />
             </FormControl>
             <FormControl sx={{ ml:15 ,mt: 6,width:200 }}>
-            <Autocomplete
+            {/* <Autocomplete
                  disabled={isUpdate}
                  value={{label:state.specialization,value:state.specialization}}
                  onChange={(e,value)=>handleOptionChange(e,value,'specialization')}
@@ -567,19 +596,40 @@ const Batches = () => {
                         }}
                      />
                   )}
+               /> */}
+                <Autocomplete
+                multiple
+                 disabled={isUpdate}
+                 defaultValue={isUpdate?state.specialization:[]}
+                 onChange={(e,values)=>handleMultiState(values,'specialization')}
+                 options={filteredSpecialization?.map(item =>item.specialization)}  
+                 getOptionLabel={(option) => option}
+                 clearIcon={null}
+
+                 renderInput={(params) => (
+                     <TextField
+                         {...params}
+                         onChange={handleSearchSpecialization}
+                         label="Specialization"
+                         variant="outlined"
+                         inputProps={{
+                             ...params.inputProps,
+                        }}
+                     />
+                  )}
                />
             </FormControl>
            
             <FormControl sx={{ ml:7 ,mt: 6,width:200 }}>
-              <InputLabel id='demo-dialog-select-label'>Country</InputLabel>
-              <Select disabled={isUpdate}  required  value={state.country} onChange={handleChange} name="country" label='Select Sender Email' labelId='demo-dialog-select-label' id='demo-dialog-select' defaultValue=''>
+              <InputLabel disabled={isUpdate} id='demo-dialog-select-label'>Country</InputLabel>
+              <Select disabled={isUpdate}   value={state.country} onChange={handleChange} name="country" label='Select Sender Email' labelId='demo-dialog-select-label' id='demo-dialog-select' defaultValue=''>
                 <MenuItem value="USA">USA</MenuItem>
                
               </Select>
             </FormControl>
             <FormControl sx={{ ml:15 ,mt: 6,width:200 }}>
             <Autocomplete
-                disabled={isUpdate}
+                disabled
                 //  defaultValue={state.city}
                  value={{label:state.school,value:state.school}}
                  onChange={(e,value)=>handleOptionChange(e,value,'school')}
@@ -618,11 +668,11 @@ const Batches = () => {
 
      
       <Card>
-        <CardHeader title='Batches' 
+        <CardHeader title='Filters' 
         action={
             <Box>
               <Button size='small' variant='contained' onClick={()=>{handleClickOpen();setIsUpdate(false)}}>
-                Create New Batch
+                Create New Filter
               </Button>
             </Box>
           }

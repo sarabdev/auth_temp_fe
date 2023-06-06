@@ -25,3 +25,10 @@ code[class*='language-'] {
 .ql-toolbar{
   background-color: #999;
 }
+.ql-tooltip, .ql-editing{
+  left: 138.233px;
+top: 266.333px;
+}
+.css-1rssnjk-MuiAutocomplete-root, .MuiAutocomplete-tag{
+  margin: 1px;
+}

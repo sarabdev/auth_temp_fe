@@ -126,7 +126,6 @@ const TableServerSide = () => {
     
   }
 
-
   const fetchStates=async()=>{
     try{
       // const response=await axios.get(`${BASE_URL}/states`);
@@ -316,6 +315,7 @@ const TableServerSide = () => {
            
            <FormControl sx={{mb:1, width:300, padding:5}}>
            <Autocomplete
+                
                  value={{label:state.state,value:state.state}}
                  onChange={(e,value)=>handleOptionChange(e,value,'state')}
                  options={filteredStates?.map(item =>({value: item.name, label: item.name}))}  

@@ -57,13 +57,16 @@ import AddTemplate from './add';
 const modules = {
   toolbar: [
     [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+    [{ color: [] }, { background: [] }],
     [{size: []}],
     ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    
     [{'list': 'ordered'}, {'list': 'bullet'}, 
      {'indent': '-1'}, {'indent': '+1'}],
     ['link', 'image', 'video'],
     ['clean']
   ],
+  
   clipboard: {
     // toggle to add extra line breaks when pasting HTML:
     matchVisual: false,
@@ -72,7 +75,7 @@ const modules = {
 
 const formats = [
   'header', 'font', 'size',
-  'bold', 'italic', 'underline', 'strike', 'blockquote',
+  'bold', 'italic', 'underline', 'strike', 'blockquote','color','background',
   'list', 'bullet', 'indent',
   'link', 'image', 'video'
 ]
@@ -95,7 +98,7 @@ const TableServerSide = () => {
   const [value,setValue]=useState('')
   const [template,setTemplate]=useState({
       id:false,
-      name:"TEST",
+      name:"",
       body:""
   })
 

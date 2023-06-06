@@ -35,9 +35,14 @@ const navigation = () => {
 
     },
     {
-      title:'View Batches',
+      title:"Send Emails",
       icon:HomeOutline,
-      path:'/batches'
+      path:'/send-emails'
+    },
+    {
+      title:'View Filters',
+      icon:HomeOutline,
+      path:'/filters'
     },
     // {
     //   title:"Add Template",
