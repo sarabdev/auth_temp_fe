@@ -1,11 +1,7 @@
 // ** React Imports
 import { useEffect, useState, useCallback } from 'react'
 
-// ** Next Import
-import Link from 'next/link'
-
 // ** MUI Imports
-import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'

@@ -59,25 +59,17 @@ const Batches = () => {
   // ** State
   const [state,setState]=useState({
     id:false,
+    name:"",
     endpoint:'',
     senderEmail:'',
     subject:'',
-    city:'',
-    state:'',
-    specialization:'',
-    country:'',
-    school:''
+    filter:""
+
   })
-  const [cities,setCities]=useState([])
-  const [filteredCities,setFilteredCities]=useState([])
-  const [schools,setSchools]=useState([])
-  const [filteredSchools,setFilteredSchools]=useState([])
-  const [states,setStates]=useState([])
-  const [filteredStates,setFilteredStates]=useState([])
+  const [filters,setFilters]=useState([])
+  const [filteredFilters,setFilteredFilters]=useState([])
   const [templates,setTemplates]=useState([])
   const [filteredTemplates,setFilteredTemplates]=useState([])
-  const [specializations,setSpecializations]=useState([])
-  const [filteredSpecialization,setFilteredSpecializations]=useState([])
   const [senders,setSenders]=useState([])
   const [filteredSenders,setFilteredSenders]=useState([])
   const [batchesList,setBatchesList]=useState([])
@@ -90,9 +82,7 @@ const Batches = () => {
   const [sortColumn, setSortColumn] = useState('userId')
   const [sort, setSort] = useState('asc')
   const [open, setOpen] = useState(false)
-  const [isFormOpen,setIsFormOpen]=useState(false)
-  const [productData, setProductData] = useState([])
-  const [userDetails, setUserDetails] = useState([])
+
 
   const handleClickOpen = async (barcode, userId) => {
     // await axios.get(`${BASE_URL}product/getproduct/?barcode=${barcode}&userId=${userId}`).then(res => {
@@ -138,29 +128,18 @@ const Batches = () => {
     fetchTableData(sort, sortColumn)
   }, [fetchTableData, sort, sortColumn])
 
-  const fetchCities=async()=>{
-    try{
-    const response=await axios.get(`${BASE_URL}/cities`);
-    setCities(response.data)
-    setFilteredCities(response.data.slice(0,20))
-    }
-    catch(e){
-      fetchCities()
-    }
-    
-  }
+  
 
-  const fetchSchools=async()=>{
+  const fetchFilters=async()=>{
     try{
-    const response=await axios.get(`${BASE_URL}/schools`);
-    setSchools(response.data)
-    setFilteredSchools(response.data.slice(0,20))
-    }
-    catch(e){
-      fetchSchools()
-    }
-    
-  }
+      const response=await axios.get(`${BASE_URL}/filters`);
+      setFilters(response.data)
+      setFilteredFilters(response.data)
+      }
+      catch(e){
+        fetchFilters()
+      }
+     } 
 
   const fetchSenders=async()=>{
     try{
@@ -173,18 +152,7 @@ const Batches = () => {
       }
      }
 
-     const fetchStates=async()=>{
-      try{
-        // const response=await axios.get(`${BASE_URL}/states`);
-        // setStates(response.data)
-        setStates(statesData)
-        console.log(statesData)
-        setFilteredStates(statesData.slice(0,20))
-        }
-        catch(e){
-          fetchStates()
-        }
-       } 
+     
 
        const fetchTemplates=async()=>{
         try{
@@ -197,47 +165,18 @@ const Batches = () => {
           }
          } 
 
-         const fetchSpecializations=async()=>{
-          try{
-            const response=await axios.get(`${BASE_URL}/specialization`);
-            setSpecializations(response.data)
-            setFilteredSpecializations(response.data)
-            }
-            catch(e){
-              fetchSpecializations()
-            }
-           } 
+      
 
-           useEffect(() => {
-            const abortController = new AbortController();
+         useEffect(() => {
           
-            const fetchData = async () => {
-              try {
-                await fetchCities();
-                await fetchSenders();
-                await fetchStates();
-                await fetchTemplates();
-                await fetchSpecializations();
-                await fetchSchools();
-              } catch (error) {
-                console.log('Error:', error);
-              }
-            };
-          
-            fetchData();
-          
-            return () => {
-              abortController.abort();
-            };
-          }, []);
+          fetchSenders();
+          fetchTemplates();
+          fetchFilters()
+      
+    
+    }, []);
 
-  const MUITableCell = styled(TableCell)(({ theme }) => ({
-    borderBottom: 0,
-    paddingLeft: '0 !important',
-    paddingRight: '0 !important',
-    paddingTop: `${theme.spacing(1)} !important`,
-    paddingBottom: `${theme.spacing(1)} !important`
-  }))
+  
 
   const handleSelected=(id)=>{
    let selectedBatch=batchesList.filter((batch)=>batch.id===id)
@@ -246,18 +185,17 @@ const Batches = () => {
   endpoint:selectedBatch[0].endpoint,
   senderEmail:selectedBatch[0].senderEmail,
   subject:selectedBatch[0].subject,
-  city:selectedBatch[0].city.split(',').map((value)=>value)
-  ,
-  state:selectedBatch[0].state.split(',').map((value)=>value),
-  specialization:selectedBatch[0].specialization.split(',').map((value)=>value),
-  country:selectedBatch[0].country,
+  name:selectedBatch[0].name,
+  filter:selectedBatch[0].filter,
+  subject:selectedBatch[0].template
+
   })
   }
 
   const columns = [
     {
       flex: 0.2,
-      minWidth: 140,
+      minWidth: 70,
       headerName: 'ID',
       field: 'userID',
       renderCell: params => (
@@ -268,15 +206,24 @@ const Batches = () => {
     },
     {
       flex: 0.2,
-      minWidth: 140,
-      headerName: 'Status',
-      field: 'email',
+      minWidth: 70,
+      headerName: 'Name',
+      field: 'name',
       renderCell: params => (
-        <Tooltip title={params.row.status}>
-          <Typography variant='body2' sx={{ color: 'text.primary' }}>
-            {params.row.status}
-          </Typography>
-        </Tooltip>
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.name}
+        </Typography>
+      )
+    },
+    {
+      flex: 0.2,
+      minWidth: 70,
+      headerName: 'Status',
+      field: 'status',
+      renderCell: params => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.status}
+        </Typography>
       )
     },
     {
@@ -304,8 +251,8 @@ const Batches = () => {
     },
     {
       flex: 0.2,
-      minWidth: 140,
-      headerName: 'Record Count',
+      minWidth: 70,
+      headerName: 'Total Count',
       field: 'count',
       renderCell: params => (
         <Typography variant='body2' sx={{ color: 'text.primary' }}>
@@ -351,22 +298,37 @@ const Batches = () => {
     setState({
       id:false,
     endpoint:'',
+    name:"",
     senderEmail:'',
     subject:'',
-    city:[],
-    state:[],
-    specialization:[],
-    country:'',
+    filter:''  
     })
   }
 
   const handleSubmit=async(e)=>{
     e.preventDefault()
     handleClose()
-    await axios.post(`${BASE_URL}/batch`,{...state},{headers:{
+    try{
+    const res=await axios.post(`${BASE_URL}/batch`,{...state},{headers:{
       Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
     }})
+    console.log(res)
     fetchTableData()
+    if(res.data.success)
+    toast.success('Filter added successfully.', {
+      duration: 2000
+    })
+    else{
+      toast.error(res.data.message, {
+        duration: 2000
+      })
+    }
+    }
+    catch(e){
+      toast.error("Something went wrong.", {
+        duration: 2000
+      })
+    }
   }
 
   const handleUpdate=async(e)=>{
@@ -378,14 +340,6 @@ const Batches = () => {
     fetchTableData()
   }
 
-  const handleSearchState=(event)=>{
-    const searchText = event.target.value;
-    setState({...state,state:searchText})
-    const filteredOptions = states.filter((option) =>
-      option.name.toLowerCase().includes(searchText.toLowerCase())
-    );
-    setFilteredStates(filteredOptions);
-  }
 
   const handleSearchSender=(event)=>{
     const searchText = event.target.value;
@@ -395,55 +349,6 @@ const Batches = () => {
     );
     setFilteredSenders(filteredOptions);
   }
-
-  const handleSearchSpecialization=(event)=>{
-    const searchText = event.target.value;
-    setState({...state,specialization:searchText})
-    const filteredOptions = specializations.filter((option) =>
-      option.specialization.toLowerCase().includes(searchText.toLowerCase())
-    );
-    setFilteredSpecializations(filteredOptions);
-  }
-
-
-  const handleMultiState=(value,key)=>{
-    setState({
-      ...state,
-    [key]:value
-    })
-  }
-
-  const renderTags = (value, getTagProps) =>
-  value.map((option, index) => (
-    <Chip
-      key={index}
-      label={option}
-      {...getTagProps({ index })}
-      style={{ margin: '1px' }} // Customize the margin here
-    />
-  ));
-
-  const handleSearchTextChange = (event) => {
-    const searchText = event.target.value;
-    setState({...state,city:searchText})
-
-    const filteredOptions = cities.filter((option) =>
-      option.name.toLowerCase().includes(searchText.toLowerCase())
-    );
-    const limitedOptions = filteredOptions.slice(0, 20);
-    setFilteredCities(limitedOptions);
-  };
-
-  const handleSearchSchool = (event) => {
-    const searchText = event.target.value;
-    setState({...state,school:searchText})
-
-    const filteredOptions = schools.filter((option) =>
-      option.school.toLowerCase().includes(searchText.toLowerCase())
-    );
-    const limitedOptions = filteredOptions.slice(0, 20);
-    setFilteredSchools(limitedOptions);
-  };
 
   const handleSearchSubject = (event) => {
     const searchText = event.target.value;
@@ -470,20 +375,38 @@ const Batches = () => {
         }}
       >
            <form onSubmit={isUpdate?handleUpdate:handleSubmit} >
-        <DialogTitle id='alert-dialog-title'>{isUpdate?'View Filters':'Create New Filter'}</DialogTitle>
+        <DialogTitle id='alert-dialog-title'>{isUpdate?'View Batch':'Create New Batch'}</DialogTitle>
         <DialogContent>
           <CardContent>
             <Grid container>
               <Grid item xs={12}>
                 <Grid container >
-             
-            <FormControl sx={{ width:200,ml:7 }}>
-              <InputLabel id='demo-dialog-select-label'>Select Endpoint</InputLabel>
-              <Select disabled={isUpdate} required value={state.endpoint} onChange={handleChange} name="endpoint" label='Select Endpoint' labelId='demo-dialog-select-label' id='demo-dialog-select' defaultValue=''>
-                <MenuItem value="sendgrid">Sendgrid</MenuItem>
-              </Select>
+            <FormControl sx={{ width:400}}>
+              <TextField disabled={isUpdate} required type='text' value={state.name} onChange={handleChange} id="standard-basic" name="name" label="Batch name" placeholder='Enter batch name' variant="standard" />
             </FormControl>
-            <FormControl sx={{ width:200, ml:15 }}>
+            <FormControl sx={{ width:400, mt:6 }}>
+            <Autocomplete
+                //  defaultValue={state.city}
+                disabled={isUpdate}
+                 value={{label:state.endpoint,value:state.endpoint}}
+                 onChange={(e,value)=>handleOptionChange(e,value,'endpoint')}
+                 options={[{value: 'sendgrid', label: 'sendgrid'}]}  
+                 getOptionLabel={(option) => option.label}
+                 renderInput={(params) => (
+                     <TextField
+                         {...params}
+                        //  onChange={handleSearchSender}
+                         label="Select an endpoint"
+                         variant="standard"
+                         required
+                         inputProps={{
+                             ...params.inputProps,
+                        }}
+                     />
+                  )}
+               />
+            </FormControl>
+            <FormControl sx={{ width:400, mt:6 }}>
             <Autocomplete
                 //  defaultValue={state.city}
                 disabled={isUpdate}
@@ -496,7 +419,7 @@ const Batches = () => {
                          {...params}
                          onChange={handleSearchSender}
                          label="Select an sender"
-                         variant="outlined"
+                         variant="standard"
                          required
                          inputProps={{
                              ...params.inputProps,
@@ -505,7 +428,7 @@ const Batches = () => {
                   )}
                />
             </FormControl>
-            <FormControl sx={{ ml:7 ,mt: 6,width:200 }}>
+            <FormControl sx={{ mt: 6,width:400 }}>
             <Autocomplete
             disabled={isUpdate}
                  value={{label:state.subject,value:state.subject}}
@@ -518,7 +441,7 @@ const Batches = () => {
                          onChange={handleSearchSubject}
                          required
                          label="Select an template"
-                         variant="outlined"
+                         variant="standard"
                          inputProps={{
                              ...params.inputProps,
                         }}
@@ -526,121 +449,20 @@ const Batches = () => {
                   )}
                />
             </FormControl>
-            <FormControl sx={{ ml:15 ,mt: 6,width:200 }}>
+            <FormControl sx={{ mt: 6,width:400 }}>
             <Autocomplete
-                disabled={isUpdate}
-                multiple
-
-                 defaultValue={isUpdate?state.city:[]}
-                 onChange={(e,values)=>handleMultiState(values,'city')}
-                 options={filteredCities?.map(item => item.name)}  
-                 getOptionLabel={(option) => option}
-                 renderTags={renderTags}
-                 clearIcon={null}
-                 renderInput={(params) => (
-                     <TextField
-                         {...params}
-                         onChange={handleSearchTextChange}
-                         label="Select an city"
-                         variant="outlined"
-                         inputProps={{
-                             ...params.inputProps,
-                        }}
-                     />
-                  )}
-               />
-            </FormControl>
-
-            <FormControl sx={{ ml:7 ,mt: 6,width:200 }}>
-            <Autocomplete
-            multiple
-                disabled={isUpdate}
-                
-                defaultValue={isUpdate?state.state:[]}
-                id="tags-standard"
-                //  value={state.state}
-                 onChange={(e,values)=>handleMultiState(values,"state")}
-                 //onChange={(e,value)=>handleOptionChange(e,value,'state')}
-                 options={filteredStates?.map(item=>item.abbreviation)}  
-                  getOptionLabel={(option) => option}
-                  renderTags={renderTags}
-                  clearIcon={null}
-                 renderInput={(params) => (
-                     <TextField
-                         {...params}
-                         onChange={handleSearchState}
-                         label="Select an state"
-                         variant="outlined"
-                         inputProps={{
-                             ...params.inputProps,
-                        }}
-                     />
-                  )}
-               />
-            </FormControl>
-            <FormControl sx={{ ml:15 ,mt: 6,width:200 }}>
-            {/* <Autocomplete
-                 disabled={isUpdate}
-                 value={{label:state.specialization,value:state.specialization}}
-                 onChange={(e,value)=>handleOptionChange(e,value,'specialization')}
-                 options={filteredSpecialization?.map(item =>({value: item.specialization, label: item.specialization}))}  
+            disabled={isUpdate}
+                 value={{label:state.filter,value:state.filter}}
+                 onChange={(e,value)=>handleOptionChange(e,value,'filter')}
+                 options={filteredFilters?.map(item =>({value: item.name, label: item.name}))}  
                  getOptionLabel={(option) => option.label}
                  renderInput={(params) => (
                      <TextField
                          {...params}
-                         onChange={handleSearchSpecialization}
-                         label="Specialization"
-                         variant="outlined"
-                         inputProps={{
-                             ...params.inputProps,
-                        }}
-                     />
-                  )}
-               /> */}
-                <Autocomplete
-                multiple
-                 disabled={isUpdate}
-                 defaultValue={isUpdate?state.specialization:[]}
-                 onChange={(e,values)=>handleMultiState(values,'specialization')}
-                 options={filteredSpecialization?.map(item =>item.specialization)}  
-                 getOptionLabel={(option) => option}
-                 clearIcon={null}
-
-                 renderInput={(params) => (
-                     <TextField
-                         {...params}
-                         onChange={handleSearchSpecialization}
-                         label="Specialization"
-                         variant="outlined"
-                         inputProps={{
-                             ...params.inputProps,
-                        }}
-                     />
-                  )}
-               />
-            </FormControl>
-           
-            <FormControl sx={{ ml:7 ,mt: 6,width:200 }}>
-              <InputLabel disabled={isUpdate} id='demo-dialog-select-label'>Country</InputLabel>
-              <Select disabled={isUpdate}   value={state.country} onChange={handleChange} name="country" label='Select Sender Email' labelId='demo-dialog-select-label' id='demo-dialog-select' defaultValue=''>
-                <MenuItem value="USA">USA</MenuItem>
-               
-              </Select>
-            </FormControl>
-            <FormControl sx={{ ml:15 ,mt: 6,width:200 }}>
-            <Autocomplete
-                disabled
-                //  defaultValue={state.city}
-                 value={{label:state.school,value:state.school}}
-                 onChange={(e,value)=>handleOptionChange(e,value,'school')}
-                 options={filteredSchools?.map(item =>({value: item.school, label: item.school}))}  
-                 getOptionLabel={(option) => option.label}
-                 renderInput={(params) => (
-                     <TextField
-                         {...params}
-                         onChange={handleSearchSchool}
-                         label="Select an school"
-                         variant="outlined"
+                        //  onChange={handleSearchSubject}
+                         required
+                         label="Select a filter"
+                         variant="standard"
                          inputProps={{
                              ...params.inputProps,
                         }}
@@ -668,11 +490,11 @@ const Batches = () => {
 
      
       <Card>
-        <CardHeader title='Filters' 
+        <CardHeader title='Batches' 
         action={
             <Box>
               <Button size='small' variant='contained' onClick={()=>{handleClickOpen();setIsUpdate(false)}}>
-                Create New Filter
+                Create New Batch
               </Button>
             </Box>
           }
