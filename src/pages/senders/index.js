@@ -53,6 +53,7 @@ const TableServerSide = () => {
   // ** State
   const [isLoading,setIsLoading]=useState(false)
   const [state,setState]=useState({
+    platform:'',
     nickname:'',
     fullname:'',
     email:'',
@@ -63,6 +64,7 @@ const TableServerSide = () => {
     zip:''
     
   })
+  const platforms=[{label:"Sendgrid",value:"sendgrid"},{label:"Salesforce", value:"salesforce"}]
   const countries=['USA']
   const [cities,setCities]=useState([])
   const [filteredCities,setFilteredCities]=useState([])
@@ -89,10 +91,27 @@ const TableServerSide = () => {
       }
     })
   }
-  const handleClose = () => setOpen(false)
+  const handleClose = () =>{ setOpen(false)
+  clearState()
+  }
 
   function loadServerRows(currentPage, data) {
     return data.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
+  }
+
+  const clearState=()=>{
+    setState({
+      platform:'',
+      nickname:'',
+      fullname:'',
+      email:'',
+      address:'',
+      country:'',
+      state:'',
+      city:'',
+      zip:''
+      
+    })
   }
 
   const fetchTableData = useCallback(
@@ -170,17 +189,7 @@ const TableServerSide = () => {
   };
 
   const columns = [
-    {
-      flex: 0.2,
-      minWidth: 140,
-      headerName: 'ID',
-      field: 'id',
-      renderCell: params => (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.id}
-        </Typography>
-      )
-    },
+    
     {
       flex: 0.2,
       minWidth: 140,
@@ -201,6 +210,18 @@ const TableServerSide = () => {
       renderCell: params => (
         <Typography variant='body2' sx={{ color: 'text.primary' }}>
           {params.row.email}
+        </Typography>
+      )
+
+    },
+    {
+      flex: 0.2,
+      minWidth: 140,
+      headerName: 'Platform',
+      field: 'platform',
+      renderCell: params => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.platform}
         </Typography>
       )
 
@@ -241,28 +262,29 @@ const TableServerSide = () => {
 
   const handleSubmit=async(e)=>{
     e.preventDefault()
+    console.log(state)
     handleClose()
     try{
-    let response=await axios.post(`${BASE_URL}/sender`,{...state},{headers:{
-        Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
-      }})
-
-    if(!response?.data?.error){ 
-      toast.success(response?.data?.message, {
+      let response=await axios.post(`${BASE_URL}/sender`,{...state},{headers:{
+          Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+        }})
+  
+      if(!response?.data?.error){ 
+        toast.success(response?.data?.message, {
+          duration: 2000
+        })
+        fetchTableData()
+      }
+      else
+      toast.error(response?.data?.message, {
         duration: 2000
       })
-      fetchTableData()
-    }
-    else
-    toast.error(response?.data?.message, {
-      duration: 2000
-    })
-    }
-    catch(error){
-      toast.error(error?.response?.data?.message, {
-        duration: 2000
-      })
-    }
+      }
+      catch(error){
+        toast.error(error?.response?.data?.message, {
+          duration: 2000
+        })
+      }
   }
 
   return (
@@ -280,6 +302,28 @@ const TableServerSide = () => {
       >
         <DialogTitle id='alert-dialog-title'>Add Sender</DialogTitle>
         <form onSubmit={handleSubmit} >
+
+        <FormControl sx={{mb:1, width:400, padding:5}}>
+           <Autocomplete
+                
+                 value={{label:state.platform,value:state.platform}}
+                 onChange={(e,value)=>handleOptionChange(e,value,'platform')}
+                 options={platforms?.map(item =>({value: item.value, label: item.label}))}  
+                 getOptionLabel={(option) => option.label}
+                 renderInput={(params) => (
+                     <TextField
+                         required
+                         {...params}
+                         onChange={handleSearchState}
+                         label="Select platform"
+                         variant="standard"
+                         inputProps={{
+                             ...params.inputProps,
+                        }}
+                     />
+                  )}
+               />
+           </FormControl>
             <FormControl sx={{ width:300,padding:5,mb:1 }}>
               <TextField required type='text' value={state.nickname} onChange={handleChange} id="standard-basic" name="nickname" label="nickname" placeholder='Enter nickname' variant="standard" />
             </FormControl>
@@ -313,7 +357,7 @@ const TableServerSide = () => {
                />
             </FormControl>
            
-           <FormControl sx={{mb:1, width:300, padding:5}}>
+            <FormControl sx={{mb:1, width:300, padding:5}}>
            <Autocomplete
                 
                  value={{label:state.state,value:state.state}}
@@ -335,26 +379,8 @@ const TableServerSide = () => {
                />
            </FormControl>
 
-
-            <FormControl sx={{ mb:1 ,width:300, padding:5 }}>
-            <Autocomplete
-                 value={{label:state.city,value:state.city}}
-                 onChange={(e,value)=>handleOptionChange(e,value,'city')}
-                 options={filteredCities?.map(item =>({value: item.name, label: item.name}))}  
-                 getOptionLabel={(option) => option.label}
-                 renderInput={(params) => (
-                     <TextField
-                        required
-                         {...params}
-                         onChange={handleSearchTextChange}
-                         label="Select an city"
-                         variant="standard"
-                         inputProps={{
-                             ...params.inputProps,
-                        }}
-                     />
-                  )}
-               />
+           <FormControl sx={{ width:300,padding:5,mb:1 }}>
+              <TextField required type='text' value={state.city} onChange={handleChange} id="standard-basic" name="city" label="city" placeholder='Enter city' variant="standard" />
             </FormControl>
 
             <FormControl sx={{ width:300,padding:5,mb:3 }}>

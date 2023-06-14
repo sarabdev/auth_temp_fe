@@ -66,6 +66,8 @@ const Batches = () => {
     filter:""
 
   })
+  const platforms=[{label:"Sendgrid",value:"sendgrid"},{label:"Salesforce", value:"salesforce"}]
+
   const [filters,setFilters]=useState([])
   const [filteredFilters,setFilteredFilters]=useState([])
   const [templates,setTemplates]=useState([])
@@ -390,7 +392,7 @@ const Batches = () => {
                 disabled={isUpdate}
                  value={{label:state.endpoint,value:state.endpoint}}
                  onChange={(e,value)=>handleOptionChange(e,value,'endpoint')}
-                 options={[{value: 'sendgrid', label: 'sendgrid'}]}  
+                 options={platforms?.map(item =>({value: item.value, label: item.label}))}  
                  getOptionLabel={(option) => option.label}
                  renderInput={(params) => (
                      <TextField
