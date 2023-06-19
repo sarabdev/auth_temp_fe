@@ -51,15 +51,7 @@ const TableServerSide = () => {
   const [productData, setProductData] = useState([])
   const [userDetails, setUserDetails] = useState([])
 
-  const handleClickOpen = async (barcode, userId) => {
-    await axios.get(`${BASE_URL}product/getproduct/?barcode=${barcode}&userId=${userId}`).then(res => {
-      if (res?.data) {
-        setProductData(res.data.product)
-        setUserDetails(res.data.user)
-        setOpen(true)
-      }
-    })
-  }
+
   const handleClose = () => setOpen(false)
 
   function loadServerRows(currentPage, data) {
@@ -69,11 +61,11 @@ const TableServerSide = () => {
   const fetchTableData = useCallback(
     async (sort, column) => {
       setIsLoading(true)
+      try{
       await axios
-        .get(`${BASE_URL}/users`, {
-          params: {
-            sort,
-            column
+        .get(`${BASE_URL}/users`,{
+          headers: {
+            Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
           }
         })
         .then(res => {
@@ -81,6 +73,10 @@ const TableServerSide = () => {
           setRows(loadServerRows(page, res.data))
           setIsLoading(false)
         })
+      }
+      catch(e){
+        setIsLoading(false)
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [page, pageSize]

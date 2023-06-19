@@ -108,12 +108,11 @@ const Batches = () => {
 
   const fetchTableData = useCallback(
     async (sort, column) => {
+      try{
       await axios
         .get(`${BASE_URL}/batch`, {
           headers: {
             Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
-            // sort,
-            // column
           }
         })
         .then(res => {
@@ -121,6 +120,10 @@ const Batches = () => {
           setRows(loadServerRows(page, res.data))
           setBatchesList(res.data)
         })
+      }
+      catch(e){
+
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [page, pageSize]
@@ -134,7 +137,11 @@ const Batches = () => {
 
   const fetchFilters=async()=>{
     try{
-      const response=await axios.get(`${BASE_URL}/filters`);
+      const response=await axios.get(`${BASE_URL}/filters`,{
+        headers: {
+          Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+        }
+      });
       setFilters(response.data)
       setFilteredFilters(response.data)
       }
@@ -145,7 +152,11 @@ const Batches = () => {
 
   const fetchSenders=async()=>{
     try{
-      const response=await axios.get(`${BASE_URL}/sender`);
+      const response=await axios.get(`${BASE_URL}/sender`,{
+        headers: {
+          Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+        }
+      });
       setSenders(response.data)
       setFilteredSenders(response.data)
       }
@@ -158,7 +169,11 @@ const Batches = () => {
 
        const fetchTemplates=async()=>{
         try{
-          const response=await axios.get(`${BASE_URL}/templates`);
+          const response=await axios.get(`${BASE_URL}/templates`,{
+            headers: {
+              Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+            }
+          });
           setTemplates(response.data)
           setFilteredTemplates(response.data)
           }

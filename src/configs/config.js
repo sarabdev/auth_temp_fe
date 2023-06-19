@@ -1,7 +1,4 @@
-// LOCAL
-// export const BASE_URL = 'http://localhost:3000/'
 
-// PRODUCTION
 
 export const BASE_URL = 'http://localhost:3008'
 

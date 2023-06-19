@@ -120,8 +120,6 @@ const Batches = () => {
         .get(`${BASE_URL}/filters`, {
           headers: {
             Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
-            // sort,
-            // column
           }
         })
         .then(res => {
@@ -140,7 +138,11 @@ const Batches = () => {
 
   const fetchCities=async()=>{
     try{
-    const response=await axios.get(`${BASE_URL}/cities`);
+    const response=await axios.get(`${BASE_URL}/cities`,{
+      headers: {
+        Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+      }
+    });
     setCities(response.data)
     setFilteredCities(response.data.slice(0,20))
     }
@@ -150,21 +152,25 @@ const Batches = () => {
     
   }
 
-  const fetchSchools=async()=>{
-    try{
-    const response=await axios.get(`${BASE_URL}/schools`);
-    setSchools(response.data)
-    setFilteredSchools(response.data.slice(0,20))
-    }
-    catch(e){
-      fetchSchools()
-    }
+  // const fetchSchools=async()=>{
+  //   try{
+  //   const response=await axios.get(`${BASE_URL}/schools`);
+  //   setSchools(response.data)
+  //   setFilteredSchools(response.data.slice(0,20))
+  //   }
+  //   catch(e){
+  //     fetchSchools()
+  //   }
     
-  }
+  // }
 
   const fetchSenders=async()=>{
     try{
-      const response=await axios.get(`${BASE_URL}/sender`);
+      const response=await axios.get(`${BASE_URL}/sender`,{
+        headers: {
+          Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+        }
+      });
       setSenders(response.data)
       setFilteredSenders(response.data)
       }
@@ -188,7 +194,11 @@ const Batches = () => {
 
        const fetchTemplates=async()=>{
         try{
-          const response=await axios.get(`${BASE_URL}/templates`);
+          const response=await axios.get(`${BASE_URL}/templates`,{
+            headers: {
+              Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+            }
+          });
           setTemplates(response.data)
           setFilteredTemplates(response.data)
           }
@@ -199,7 +209,11 @@ const Batches = () => {
 
          const fetchSpecializations=async()=>{
           try{
-            const response=await axios.get(`${BASE_URL}/specialization`);
+            const response=await axios.get(`${BASE_URL}/specialization`,{
+              headers: {
+                Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+              }
+            });
             setSpecializations(response.data)
             setFilteredSpecializations(response.data)
             }
@@ -211,7 +225,11 @@ const Batches = () => {
 
            const fetchFilters=async()=>{
             try{
-              const response=await axios.get(`${BASE_URL}/filters`);
+              const response=await axios.get(`${BASE_URL}/filters`,{
+                headers: {
+                  Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+                }
+              });
               setFilters(response.data)
               setFilteredFilters(response.data)
               }
@@ -229,7 +247,7 @@ const Batches = () => {
                 await fetchStates();
                 await fetchFilters();
                 await fetchSpecializations();
-                await fetchSchools();
+                // await fetchSchools();
               } catch (error) {
                 console.log('Error:', error);
               }

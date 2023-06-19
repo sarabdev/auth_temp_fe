@@ -285,7 +285,11 @@ const TableServerSide = () => {
   const addTemplate=async()=>{
     try{
       console.log(value)
-      await axios.post(`${BASE_URL}/templates`,{name:template.name,body:value})
+      await axios.post(`${BASE_URL}/templates`,{name:template.name,body:value},{
+        headers: {
+          Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+        }
+      })
       setTemplate({
         name:"",
         body:""

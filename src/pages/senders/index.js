@@ -82,15 +82,6 @@ const TableServerSide = () => {
   const [productData, setProductData] = useState([])
   const [userDetails, setUserDetails] = useState([])
 
-  const handleClickOpen = async (barcode, userId) => {
-    await axios.get(`${BASE_URL}product/getproduct/?barcode=${barcode}&userId=${userId}`).then(res => {
-      if (res?.data) {
-        setProductData(res.data.product)
-        setUserDetails(res.data.user)
-        setOpen(true)
-      }
-    })
-  }
   const handleClose = () =>{ setOpen(false)
   clearState()
   }
@@ -117,6 +108,7 @@ const TableServerSide = () => {
   const fetchTableData = useCallback(
     async (sort, column) => {
       setIsLoading(true)
+      try{
       await axios.get(`${BASE_URL}/sender`,{headers:{
             Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
           }})
@@ -125,6 +117,10 @@ const TableServerSide = () => {
           setRows(loadServerRows(page, res.data))
           setIsLoading(false)
         })
+      }
+      catch(e){
+        setIsLoading(false)
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [page, pageSize]
@@ -135,7 +131,11 @@ const TableServerSide = () => {
 
   const fetchCities=async()=>{
     try{
-    const response=await axios.get(`${BASE_URL}/cities`);
+    const response=await axios.get(`${BASE_URL}/cities`,{
+      headers: {
+        Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+      }
+    });
     setCities(response.data)
     setFilteredCities(response.data.slice(0,20))
     }
@@ -268,12 +268,14 @@ const TableServerSide = () => {
       let response=await axios.post(`${BASE_URL}/sender`,{...state},{headers:{
           Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
         }})
+
+      console.log(response)
   
       if(!response?.data?.error){ 
         toast.success(response?.data?.message, {
           duration: 2000
         })
-        fetchTableData()
+        // fetchTableData()
       }
       else
       toast.error(response?.data?.message, {
@@ -281,6 +283,7 @@ const TableServerSide = () => {
       })
       }
       catch(error){
+        console.log(error)
         toast.error(error?.response?.data?.message, {
           duration: 2000
         })
