@@ -70,7 +70,10 @@ const TableServerSide = () => {
         })
         .then(res => {
           setTotal(res.data.length)
-          setRows(loadServerRows(page, res.data))
+          const recordsWithSerial = res.data.map((record, index) => {
+            return { ...record, serial: index + 1 };
+          });
+          setRows(loadServerRows(page, recordsWithSerial))
           setIsLoading(false)
         })
       }
@@ -97,11 +100,11 @@ const TableServerSide = () => {
     {
       flex: 0.2,
       minWidth: 140,
-      headerName: 'User ID',
+      headerName: 'S No.',
       field: 'userID',
       renderCell: params => (
         <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.id}
+          {params.row.serial}
         </Typography>
       )
     },

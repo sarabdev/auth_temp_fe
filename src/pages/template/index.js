@@ -1,6 +1,8 @@
 // ** React Imports
 import { useEffect, useState, useCallback } from 'react'
 import { statesData } from 'src/store/states';
+import { countriesData } from 'src/store/countries';
+import { universitiesData } from 'src/store/universities';
 // ** Next Import
 import Link from 'next/link'
 import ReactQuill from 'react-quill';
@@ -42,7 +44,7 @@ import { styled } from '@mui/material/styles'
 import CardContent from '@mui/material/CardContent'
 import moment from 'moment/moment'
 import toast from 'react-hot-toast'
-
+import { Fetch_Templates_Base_Url } from 'src/configs/config';
 // ** ThirdParty Components
 import axios from 'axios'
 
@@ -54,6 +56,18 @@ import ServerSideToolbar from 'src/views/table/data-grid/ServerSideToolbar'
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
 import AddTemplate from './add';
+
+
+//test
+// Quill.register('modules/imageResize', ImageResize);
+
+
+
+//test
+
+
+
+
 const modules = {
   toolbar: [
     [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
@@ -66,6 +80,7 @@ const modules = {
     ['link', 'image', 'video'],
     ['clean']
   ],
+
   
   clipboard: {
     // toggle to add extra line breaks when pasting HTML:
@@ -84,17 +99,13 @@ const TableServerSide = () => {
   const router=useRouter()
   const [isLoading,setIsLoading]=useState(false)
   const [state,setState]=useState({
-    nickname:'',
-    fullname:'',
-    email:'',
-    address:'',
+    
+    
     country:'',
-    state:'',
-    city:'',
-    zip:''
+    school:''
+    
     
   })
-  const countries=['USA']
   const [value,setValue]=useState('')
   const [template,setTemplate]=useState({
       id:false,
@@ -122,17 +133,24 @@ const TableServerSide = () => {
   const [sortColumn, setSortColumn] = useState('userId')
   const [sort, setSort] = useState('asc')
   const [open, setOpen] = useState(false)
+  const [filterOpen, setFilterOpen]=useState(false)
   const [productData, setProductData] = useState([])
   const [userDetails, setUserDetails] = useState([])
-
- 
+  const [schools,setSchools]=useState([...universitiesData])
+  const [filteredSchools,setFilteredSchools]=useState([...universitiesData.slice(0,20)])
+  const [countries,setCountries]=useState([...countriesData])
+  const [filteredCountries,setFilteredCountries]=useState([
+    ...countries.slice(0,20)
+  ])
   const handleClose = () =>{
     setTemplate({
       id:false,
       name:""
     })
     setValue("")
-    setOpen(false)}
+    setOpen(false)
+    setFilterOpen(false)
+  }
 
   function loadServerRows(currentPage, data) {
     return data.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
@@ -146,9 +164,12 @@ const TableServerSide = () => {
           }})
         .then(res => {
           setTotal(res.data.length)
-          setRows(loadServerRows(page, res.data))
+          const recordsWithSerial = res.data.map((record, index) => {
+            return { ...record, serial: index + 1 };
+          });
+          setRows(loadServerRows(page, recordsWithSerial))
           setIsLoading(false)
-          setTemplates(res.data)
+          setTemplates(recordsWithSerial)
         })
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -157,6 +178,8 @@ const TableServerSide = () => {
   useEffect(() => {
     fetchTableData(sort, sortColumn)
   }, [fetchTableData, sort, sortColumn])
+
+  
 
   const handleSelected=(id)=>{
      let selectedTemplate=templates.filter((template)=>template.id==id)
@@ -174,35 +197,59 @@ const TableServerSide = () => {
     })
   }
 
+  const handleDelete=async(id)=>{
+    try{
+      let response= await axios.delete(`${BASE_URL}/templates/${id}`,{headers:{
+        Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+      }})
+      if(!response?.data?.error){ 
+        toast.success(response?.data?.message, {
+          duration: 2000
+        })
+         fetchTableData()
+      }
+      else
+      toast.error(response?.data?.message, {
+        duration: 2000
+      })
+    }
+    catch(e){
+      console.log(e)
+      toast.error("Try again!", {
+        duration: 2000
+      })
+    }
+  }
+
   const handleSearchState=(event)=>{
     const searchText = event.target.value;
     setState({...state,state:searchText})
-    const filteredOptions = states.filter((option) =>
-      option.name.toLowerCase().includes(searchText.toLowerCase())
+    const filteredOptions = schools.filter((option) =>
+      option.toLowerCase().includes(searchText.toLowerCase())
     );
-    setFilteredStates(filteredOptions);
+    setFilteredSchools(filteredOptions.slice(0,20));
   }
 
   const handleSearchTextChange = (event) => {
     const searchText = event.target.value;
     setState({...state,city:searchText})
 
-    const filteredOptions = cities.filter((option) =>
-      option.name.toLowerCase().includes(searchText.toLowerCase())
+    const filteredOptions = countries.filter((option) =>
+      option.toLowerCase().includes(searchText.toLowerCase())
     );
     const limitedOptions = filteredOptions.slice(0, 20);
-    setFilteredCities(limitedOptions);
+    setFilteredCountries(limitedOptions);
   };
 
   const columns = [
     {
       flex: 0.2,
       minWidth: 140,
-      headerName: 'ID',
+      headerName: 'S No.',
       field: 'id',
       renderCell: params => (
         <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.id}
+          {params.row.serial}
         </Typography>
       )
     },
@@ -224,8 +271,10 @@ const TableServerSide = () => {
       headerName:'Action',
       field:'action',
       renderCell:params=>(
-        <Button variant='contained' onClick={()=>{handleSelected(params.row.id);setOpen(true)}}>Update</Button>
-      )
+        <><Button size="small" variant='contained' onClick={()=>{handleSelected(params.row.id);setOpen(true)}}>Update</Button>
+        <Button size="small" sx={{ml:5}} variant='contained' onClick={()=>{handleDelete(params.row.id)}}>Delete</Button>
+        </>
+        )
     }
     
     
@@ -306,6 +355,17 @@ const TableServerSide = () => {
     }
   }
 
+  const fetchTemplate=async()=>{
+    try{
+      const response=await axios.post(`${Fetch_Templates_Base_Url}/api/content-by-country`, {Country:"Japan"},{ headers: {
+        'Access-Control-Allow-Origin': '*',
+      },})
+       console.log(response)
+      }
+    catch(e){
+
+    }
+  }
   const handleSubmit=async(e)=>{
     e.preventDefault()
     handleClose()
@@ -317,8 +377,150 @@ const TableServerSide = () => {
     }
   }
 
+
+  const handleMultiState=(value,key)=>{
+    setState({
+      ...state,
+    [key]:value
+    })
+  }
+
+  //  const fetchSchools=async()=>{
+  //   try{
+  //   const response=await axios.get(`${BASE_URL}/schools`,{headers:{
+  //     Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+  //   }});
+  //   setSchools(response.data)
+  //   setFilteredSchools(response.data.slice(0,20))
+  //   }
+  //   catch(e){
+  //     fetchSchools()
+  //   }
+    
+  // }
+
+  const handleFilterSubmit=async(e)=>{
+    e.preventDefault()
+    handleClose()
+    
+    try{
+  
+    const response=await axios.post(`${Fetch_Templates_Base_Url}/api/content`,
+     {
+      Country:state.country,
+      University: state.school
+    }
+    )
+    console.log(response)
+    console.log(state.country)
+    console.log(state.school)
+    setValue(response.data.html)
+    setOpen(true)
+    }
+    catch(e){
+
+    }
+  }
+
   return (
     <>
+ <Dialog
+        open={filterOpen}
+        disableEscapeKeyDown
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
+        onClose={(event, reason) => {
+          if (reason !== 'backdropClick') {
+            handleClose()
+          }
+        }}
+      >
+           <form onSubmit={handleFilterSubmit} >
+        <DialogTitle id='alert-dialog-title'>{'Filter'}</DialogTitle>
+        <DialogContent>
+          <CardContent>
+            <Grid container>
+              <Grid item xs={12}>
+                <Grid container >
+          
+          
+            <FormControl sx={{width:200 }}>
+            <Autocomplete
+
+                 onChange={(e,values)=>handleMultiState(values,'country')}
+                 options={filteredCountries?.map(item => item)}  
+                 getOptionLabel={(option) => option}
+                 clearIcon={null}
+                 renderInput={(params) => (
+                     <TextField
+                         {...params}
+                         onChange={handleSearchTextChange}
+                         label="Select an country"
+                         variant="outlined"
+                         inputProps={{
+                             ...params.inputProps,
+                        }}
+                     />
+                  )}
+               />
+            </FormControl>
+
+            <FormControl sx={{ ml:15,width:200 }}>
+            <Autocomplete
+                
+                id="tags-standard"
+                //  value={state.state}
+                 onChange={(e,values)=>handleMultiState(values,"school")}
+                 //onChange={(e,value)=>handleOptionChange(e,value,'state')}
+                 options={filteredSchools?.map(item=>item)}  
+                  getOptionLabel={(option) => option}
+                  clearIcon={null}
+                 renderInput={(params) => (
+                     <TextField
+                         {...params}
+                         onChange={handleSearchState}
+                         label="Select an school"
+                         variant="outlined"
+                         inputProps={{
+                             ...params.inputProps,
+                        }}
+                     />
+                  )}
+               />
+            </FormControl>
+
+                </Grid>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </DialogContent>
+
+       
+        <DialogActions className='dialog-actions-dense'>
+          <Button onClick={handleClose}>Close</Button>
+           <Button type='submit'variant='contained'>Fetch</Button>
+        </DialogActions>
+        </form>
+
+      </Dialog>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       <Dialog
         open={open}
         maxWidth={'md'}
@@ -367,6 +569,9 @@ const TableServerSide = () => {
         <CardHeader title='Templates' 
         action={
             <Box>
+              <Button sx={{mr:5}} size='small' variant='contained' onClick={()=>setFilterOpen(true)}>Fetch Template
+
+              </Button>
               <Button size='small' variant='contained' onClick={()=>setOpen(true)}>
                 Add Template
               </Button>

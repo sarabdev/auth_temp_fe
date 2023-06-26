@@ -1,6 +1,11 @@
 // ** React Imports
 import { useEffect, useState, useCallback } from 'react'
 import { statesData } from 'src/store/states'
+import Divider from '@mui/material/Divider';
+
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+
 // ** Next Import
 import Link from 'next/link'
 
@@ -57,13 +62,23 @@ import toast from 'react-hot-toast'
 
 const Batches = () => {
   // ** State
+
+  const marketingAdOptions=["Ad 1","Ad 2","Ad 3"]
+  const repeat=["Daily","Weekly","Monthly"]
   const [state,setState]=useState({
     id:false,
     filter:"",
+    name:"",
     city:'',
     state:'',
     specialization:'',
+    target_school:'',
     country:'',
+    origin_school:'',
+    marketing_ad:'',
+    repeat:'',
+    time:'',
+    news:false,
     school:''
   })
   const [filters,setFilters]=useState([])
@@ -124,8 +139,11 @@ const Batches = () => {
         })
         .then(res => {
           setTotal(res.data.length)
-          setRows(loadServerRows(page, res.data))
-          setBatchesList(res.data)
+          const recordsWithSerial = res.data.map((record, index) => {
+            return { ...record, serial: index + 1 };
+          });
+          setRows(loadServerRows(page, recordsWithSerial))
+          setBatchesList(recordsWithSerial)
         })
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -268,30 +286,59 @@ const Batches = () => {
     paddingBottom: `${theme.spacing(1)} !important`
   }))
 
+ const handleDelete=async(id)=>{
+  try{
+    let response= await axios.delete(`${BASE_URL}/filters/${id}`,{headers:{
+      Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+    }})
+    if(!response?.data?.error){ 
+      toast.success(response?.data?.message, {
+        duration: 2000
+      })
+       fetchTableData()
+    }
+    else
+    toast.error(response?.data?.message, {
+      duration: 2000
+    })
+  }
+  catch(e){
+    console.log(e)
+    toast.error("Try again!", {
+      duration: 2000
+    })
+  }
+ }
+
   const handleSelected=(id)=>{
    let selectedBatch=batchesList.filter((batch)=>batch.id===id)
    console.log(selectedBatch)
    setState({
     id,
     name:selectedBatch[0].name,
-    filter:selectedBatch[0].filter,
+    // filter:selectedBatch[0].filter,
   city:selectedBatch[0].cities.split(',').map((value)=>value)
   ,
   state:selectedBatch[0].states.split(',').map((value)=>value),
   specialization:selectedBatch[0].specializations.split(',').map((value)=>value),
-  country:selectedBatch[0].country,
+  country:selectedBatch[0].country.split(',').map((value)=>value),
+  marketing_ad:selectedBatch[0].marketing_ad,
+  repeat:selectedBatch[0].repeat,
+  news:selectedBatch[0].news
   })
   }
+
+  
 
   const columns = [
     {
       flex: 0.2,
       minWidth: 140,
-      headerName: 'ID',
+      headerName: 'S No.',
       field: 'userID',
       renderCell: params => (
         <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.id}
+          {params.row.serial}
         </Typography>
       )
     },
@@ -331,6 +378,26 @@ const Batches = () => {
         </Box>
       )
     },
+    {
+      flex: 0.2,
+      minWidth: 140,
+      headerName: 'Action',
+      field: 'action',
+      renderCell: params => (
+        <Button size="small" variant='contained' onClick={()=>handleDelete(params.row.id)} >Delete</Button>
+
+      )
+    },
+    // {
+    //   flex:0.2,
+    //   minWidth:140,
+    //   headerName:'Action',
+    //   field:'action',
+    //   renderCell:params=>(
+    //     <Button  variant='contained' onClick={()=>{handleDelete(params.row.id)}}>Delete</Button>
+        
+    //     )
+    // }
   
     
   ]
@@ -379,16 +446,21 @@ const Batches = () => {
   const handleSubmit=async(e)=>{
     e.preventDefault()
     handleClose()
+    console.log(state)
   try{
      const res=await axios.post(`${BASE_URL}/filters`,{
       name:state.name,
       cities:state.city,
       states:state.state,
       specializations:state.specialization,
-      country:state.country
+      country:state.country,
+      marketing_ad:state.marketing_ad,
+      repeat:state.repeat,
+      news:state.news
     },{headers:{
        Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
      }})
+     console.log(res)
     fetchTableData()
     if(res.data.success)
     toast.success('Filter added successfully.', {
@@ -410,11 +482,33 @@ const Batches = () => {
   const handleUpdate=async(e)=>{
     e.preventDefault()
     handleClose()
-    await axios.put(`${BASE_URL}/batch/${state.id}`,state,{headers:{
-      Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
-    }})
-    fetchTableData()
-    
+    try{
+      await axios.put(`${BASE_URL}/filters/${state.id}`,
+      {
+        name:state.name,
+        cities:state.city,
+        states:state.state,
+        specializations:state.specialization,
+        country:state.country,
+        marketing_ad:state.marketing_ad,
+        repeat:state.repeat,
+        news:state.news
+      },
+      
+      {headers:{
+        Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+      }})
+      fetchTableData()
+      toast.success('Filter updated successfully.', {
+        duration: 2000
+      })
+      
+      }
+      catch(e){
+        toast.error("Something went wrong.", {
+          duration: 2000
+        })
+      }
   }
 
   const handleSearchState=(event)=>{
@@ -509,41 +603,21 @@ const Batches = () => {
         }}
       >
            <form onSubmit={isUpdate?handleUpdate:handleSubmit} >
-        <DialogTitle id='alert-dialog-title'>{isUpdate?'View Filters':'Create New Filter'}</DialogTitle>
+        <DialogTitle id='alert-dialog-title'>{isUpdate?'Update Filter':'Create New Filter'}</DialogTitle>
         <DialogContent>
           <CardContent>
             <Grid container>
               <Grid item xs={12}>
                 <Grid container >
                 <FormControl sx={{ width:400, mb:6}}>
-              <TextField disabled={isUpdate} required type='text' value={state.name} onChange={handleChange} id="standard-basic" name="name" label="Name" placeholder='Enter filter name' variant="standard" />
+              <TextField  required type='text' value={state.name} onChange={handleChange} id="standard-basic" name="name" label="Name" placeholder='Enter filter name' variant="standard" />
             </FormControl>
-            {/* <FormControl sx={{ width:200 }}>
-            <Autocomplete
-                //  defaultValue={state.city}
-                disabled={isUpdate}
-                 value={{label:state.filter,value:state.filter}}
-                 onChange={(e,value)=>handleOptionChange(e,value,'filter')}
-                 options={filteredFilters?.map(item =>({value: item.name, label: item.name}))}  
-                 getOptionLabel={(option) => option.label}
-                 renderInput={(params) => (
-                     <TextField
-                         {...params}
-                         onChange={handleSearchSender}
-                         label="Select an filter"
-                         variant="outlined"
-                         required
-                         inputProps={{
-                             ...params.inputProps,
-                        }}
-                     />
-                  )}
-               />
-            </FormControl> */}
-          
+            <br/>
+            <Typography variant='subtitle1' sx={{width:"100%",marginBottom:2}}>
+          Target Filters:
+        </Typography>
             <FormControl sx={{width:200 }}>
             <Autocomplete
-                disabled={isUpdate}
                 multiple
 
                  defaultValue={isUpdate?state.city:[]}
@@ -556,7 +630,7 @@ const Batches = () => {
                      <TextField
                          {...params}
                          onChange={handleSearchTextChange}
-                         label="Select an city"
+                         label="Target City"
                          variant="outlined"
                          inputProps={{
                              ...params.inputProps,
@@ -569,7 +643,6 @@ const Batches = () => {
             <FormControl sx={{ ml:15,width:200 }}>
             <Autocomplete
             multiple
-                disabled={isUpdate}
                 
                 defaultValue={isUpdate?state.state:[]}
                 id="tags-standard"
@@ -584,7 +657,7 @@ const Batches = () => {
                      <TextField
                          {...params}
                          onChange={handleSearchState}
-                         label="Select an state"
+                         label="Target State"
                          variant="outlined"
                          inputProps={{
                              ...params.inputProps,
@@ -593,6 +666,7 @@ const Batches = () => {
                   )}
                />
             </FormControl>
+            <Divider/>
             <FormControl sx={{ mt: 6,width:200 }}>
             {/* <Autocomplete
                  disabled={isUpdate}
@@ -614,18 +688,17 @@ const Batches = () => {
                /> */}
                 <Autocomplete
                 multiple
-                 disabled={isUpdate}
                  defaultValue={isUpdate?state.specialization:[]}
                  onChange={(e,values)=>handleMultiState(values,'specialization')}
                  options={filteredSpecialization?.map(item =>item.specialization)}  
-                 getOptionLabel={(option) => option}
+                 getOptionLabel={(option) => option?option:''}
                  clearIcon={null}
 
                  renderInput={(params) => (
                      <TextField
                          {...params}
                          onChange={handleSearchSpecialization}
-                         label="Specialization"
+                         label="Target Specialization"
                          variant="outlined"
                          inputProps={{
                              ...params.inputProps,
@@ -635,26 +708,20 @@ const Batches = () => {
                />
             </FormControl>
            
-            <FormControl sx={{ ml:15,mt: 6,width:200 }}>
-              <InputLabel disabled={isUpdate} id='demo-dialog-select-label'>Country</InputLabel>
-              <Select disabled={isUpdate}   value={state.country} onChange={handleChange} name="country" label='Select Sender Email' labelId='demo-dialog-select-label' id='demo-dialog-select' defaultValue=''>
-                <MenuItem value="USA">USA</MenuItem>
-               
-              </Select>
-            </FormControl>
-            <FormControl sx={{mt: 6,width:200 }}>
+          
+            <FormControl sx={{ml:15,mt: 6,width:200 }}>
             <Autocomplete
-                disabled
                 //  defaultValue={state.city}
-                 value={{label:state.school,value:state.school}}
-                 onChange={(e,value)=>handleOptionChange(e,value,'school')}
+                 value={[]}
+                 disabled
+                 onChange={(e,value)=>handleOptionChange(e,value,'target_school')}
                  options={filteredSchools?.map(item =>({value: item.school, label: item.school}))}  
                  getOptionLabel={(option) => option.label}
                  renderInput={(params) => (
                      <TextField
                          {...params}
                          onChange={handleSearchSchool}
-                         label="Select an school"
+                         label="Target School"
                          variant="outlined"
                          inputProps={{
                              ...params.inputProps,
@@ -664,6 +731,130 @@ const Batches = () => {
                />
             </FormControl>
 
+          
+
+            <Typography variant='subtitle1' sx={{width:"100%",marginBottom:2, marginTop:5}}>
+          Origin Filters:
+        </Typography>
+
+        <FormControl sx={{width:200 }}>
+            <Autocomplete
+                multiple
+
+                 defaultValue={isUpdate?state.city:[]}
+                 onChange={(e,values)=>handleMultiState(values,'country')}
+                 options={filteredCities?.map(item => item.name)}  
+                 getOptionLabel={(option) => option}
+                 renderTags={renderTags}
+                 clearIcon={null}
+                 renderInput={(params) => (
+                     <TextField
+                         {...params}
+                         onChange={handleSearchTextChange}
+                         label="Origin Country"
+                         variant="outlined"
+                         inputProps={{
+                             ...params.inputProps,
+                        }}
+                     />
+                  )}
+               />
+            </FormControl>
+
+
+            <FormControl sx={{ ml:15,width:200 }}>
+            <Autocomplete
+            multiple
+                
+                
+                defaultValue={[]}
+                id="tags-standard"
+                disabled
+                //  value={state.state}
+                 onChange={(e,values)=>handleMultiState(values,"origin_school")}
+                 //onChange={(e,value)=>handleOptionChange(e,value,'state')}
+                 options={filteredStates?.map(item=>item.abbreviation)}  
+                  getOptionLabel={(option) => option}
+                  renderTags={renderTags}
+                  clearIcon={null}
+                 renderInput={(params) => (
+                     <TextField
+                         {...params}
+                         onChange={handleSearchState}
+                         label="Origin School"
+                         variant="outlined"
+                         inputProps={{
+                             ...params.inputProps,
+                        }}
+                     />
+                  )}
+               />
+            </FormControl>
+            <Typography variant='subtitle1' sx={{width:"100%",marginBottom:2, marginTop:5}}>
+          Configuration:
+        </Typography>
+
+        <FormControl sx={{width:200 }}>
+            <Autocomplete
+
+                 defaultValue={isUpdate?state.marketing_ad:''}
+                 onChange={(e,values)=>handleMultiState(values,'marketing_ad')}
+                 options={marketingAdOptions?.map(item => item)}  
+                 getOptionLabel={(option) => option}
+                 renderTags={renderTags}
+                 clearIcon={null}
+                 renderInput={(params) => (
+                     <TextField
+                         {...params}
+                         onChange={handleSearchTextChange}
+                         label="Marketing Ad"
+                         variant="outlined"
+                         inputProps={{
+                             ...params.inputProps,
+                        }}
+                     />
+                  )}
+               />
+            </FormControl>
+
+
+            <FormControl sx={{ ml:15,width:200 }}>
+            <Autocomplete
+            
+                
+                defaultValue={isUpdate?state.repeat:''}
+                id="tags-standard"
+                //  value={state.state}
+                 onChange={(e,values)=>handleMultiState(values,"repeat")}
+                 //onChange={(e,value)=>handleOptionChange(e,value,'state')}
+                 options={repeat?.map(item=>item)}  
+                  getOptionLabel={(option) => option}
+                  renderTags={renderTags}
+                  clearIcon={null}
+                 renderInput={(params) => (
+                     <TextField
+                         {...params}
+                         onChange={handleSearchState}
+                         label="Repeat"
+                         variant="outlined"
+                         inputProps={{
+                             ...params.inputProps,
+                        }}
+                     />
+                  )}
+               />
+            </FormControl>
+
+            <FormControl>
+
+            </FormControl>
+
+            <FormControl sx={{width:200, mt:4}}>
+            <FormControlLabel  control={<Checkbox onChange={(e)=>setState({...state, news:e.target.checked})} defaultChecked={state.news} />} label="Attach News" />
+
+            </FormControl>
+           
+
                 </Grid>
               </Grid>
             </Grid>
@@ -671,9 +862,10 @@ const Batches = () => {
         </DialogContent>
 
        
+       
         <DialogActions className='dialog-actions-dense'>
           <Button onClick={handleClose}>Close</Button>
-          {!isUpdate && <Button type='submit'  variant='contained'>{'Create'}</Button>}
+          {!isUpdate ? <Button type='submit'  variant='contained'>{'Create'}</Button>:<Button type="submit" variant='contained'>Update</Button>}
 
         </DialogActions>
         </form>
@@ -715,6 +907,7 @@ const Batches = () => {
           }}
         />
       </Card>
+
     </>
   )
 }

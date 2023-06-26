@@ -119,6 +119,7 @@ const TableServerSide = () => {
         })
       }
       catch(e){
+        console.log(e)
         setIsLoading(false)
       }
     },
@@ -128,6 +129,30 @@ const TableServerSide = () => {
   useEffect(() => {
     fetchTableData(sort, sortColumn)
   }, [fetchTableData, sort, sortColumn])
+
+  const handleSelected=async(id,platform)=>{
+    try{
+    let response=await axios.post(`${BASE_URL}/sender/deleteSender`,{id,platform},{headers:{
+      Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+    }})
+
+    if(!response?.data?.error){ 
+      toast.success(response?.data?.message, {
+        duration: 2000
+      })
+       fetchTableData()
+    }
+    else
+    toast.error(response?.data?.message, {
+      duration: 2000
+    })
+   }
+   catch(e){
+    toast.error("Try again!", {
+      duration: 2000
+    })
+   }
+  }
 
   const fetchCities=async()=>{
     try{
@@ -226,6 +251,15 @@ const TableServerSide = () => {
       )
 
     },
+    {
+      flex:0.2,
+      minWidth:140,
+      headerName:'Action',
+      field:'action',
+      renderCell:params=>(
+        <Button variant='contained' onClick={()=>handleSelected(params.row.id,params.row.platform)} >Delete</Button>
+      )
+    }
     
     
   ]
