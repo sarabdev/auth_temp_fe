@@ -39,6 +39,8 @@ import TableCell from '@mui/material/TableCell'
 import Autocomplete from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
+import TimeField from 'react-simple-timefield';
+
 
 import { styled } from '@mui/material/styles'
 import CardContent from '@mui/material/CardContent'
@@ -59,10 +61,12 @@ import { getInitials } from 'src/@core/utils/get-initials'
 import { update } from 'draft-js/lib/DefaultDraftBlockRenderMap'
 import { batch } from 'react-redux'
 import toast from 'react-hot-toast'
+import { countriesData } from 'src/store/countries';
+
 
 const Batches = () => {
   // ** State
-
+  const [timeSeconds,setTimeSeconds]=useState("12:34:56")
   const marketingAdOptions=["Ad 1","Ad 2","Ad 3"]
   const repeat=["Daily","Weekly","Monthly"]
   const [state,setState]=useState({
@@ -71,15 +75,18 @@ const Batches = () => {
     name:"",
     city:'',
     state:'',
-    specialization:'',
+    specialization:[],
     target_school:'',
     country:'',
     origin_school:'',
     marketing_ad:'',
     repeat:'',
-    time:'',
+    time:'12:00',
     news:false,
-    school:''
+    school:'',
+    endpoint:'',
+    senderEmail:'',
+    subject:'',
   })
   const [filters,setFilters]=useState([])
   const [filteredFilters,setFilteredFilters]=useState([])
@@ -108,6 +115,9 @@ const Batches = () => {
   const [isFormOpen,setIsFormOpen]=useState(false)
   const [productData, setProductData] = useState([])
   const [userDetails, setUserDetails] = useState([])
+  const [countries,setCountries]=useState([...countriesData])
+  const [filteredCountries,setFilteredCountries]=useState([...countriesData.slice(0,20)])
+  const platforms=[{label:"Sendgrid",value:"sendgrid"},{label:"Salesforce", value:"salesforce"}]
 
   const handleClickOpen = async (barcode, userId) => {
     // await axios.get(`${BASE_URL}product/getproduct/?barcode=${barcode}&userId=${userId}`).then(res => {
@@ -154,6 +164,16 @@ const Batches = () => {
     fetchTableData(sort, sortColumn)
   }, [fetchTableData, sort, sortColumn])
 
+
+  const onTimeChange=(event, value)=> {
+    const newTime = value.replace(/-/g, ':');
+    const time = newTime.substr(0, 5);
+    const timeSeconds2 = newTime.padEnd(8, timeSeconds.substr(5, 3));
+    const timeSecondsCustomColon = timeSeconds2.replace(/:/g, '-');
+
+    setTimeSeconds(timeSeconds2)
+  }
+
   const fetchCities=async()=>{
     try{
     const response=await axios.get(`${BASE_URL}/cities`,{
@@ -199,8 +219,6 @@ const Batches = () => {
 
      const fetchStates=async()=>{
       try{
-        // const response=await axios.get(`${BASE_URL}/states`);
-        // setStates(response.data)
         setStates(statesData)
         console.log(statesData)
         setFilteredStates(statesData.slice(0,20))
@@ -209,21 +227,6 @@ const Batches = () => {
           fetchStates()
         }
        } 
-
-       const fetchTemplates=async()=>{
-        try{
-          const response=await axios.get(`${BASE_URL}/templates`,{
-            headers: {
-              Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
-            }
-          });
-          setTemplates(response.data)
-          setFilteredTemplates(response.data)
-          }
-          catch(e){
-            fetchTemplates()
-          }
-         } 
 
          const fetchSpecializations=async()=>{
           try{
@@ -256,6 +259,21 @@ const Batches = () => {
               }
              } 
 
+             const fetchTemplates=async()=>{
+              try{
+                const response=await axios.get(`${BASE_URL}/templates`,{
+                  headers: {
+                    Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+                  }
+                });
+                setTemplates(response.data)
+                setFilteredTemplates(response.data)
+                }
+                catch(e){
+                  fetchTemplates()
+                }
+               } 
+
            useEffect(() => {
             const abortController = new AbortController();
           
@@ -265,6 +283,8 @@ const Batches = () => {
                 await fetchStates();
                 await fetchFilters();
                 await fetchSpecializations();
+                await fetchSenders()
+                await fetchTemplates()
                 // await fetchSchools();
               } catch (error) {
                 console.log('Error:', error);
@@ -312,7 +332,7 @@ const Batches = () => {
 
   const handleSelected=(id)=>{
    let selectedBatch=batchesList.filter((batch)=>batch.id===id)
-   console.log(selectedBatch)
+   console.log(selectedBatch[0])
    setState({
     id,
     name:selectedBatch[0].name,
@@ -324,7 +344,11 @@ const Batches = () => {
   country:selectedBatch[0].country.split(',').map((value)=>value),
   marketing_ad:selectedBatch[0].marketing_ad,
   repeat:selectedBatch[0].repeat,
-  news:selectedBatch[0].news
+  news:selectedBatch[0].news,
+  endpoint:selectedBatch[0].endpoint,
+  senderEmail:selectedBatch[0].senderEmail,
+  subject:selectedBatch[0].subject,
+  time:selectedBatch[0].time
   })
   }
 
@@ -426,6 +450,7 @@ const Batches = () => {
   }
 
   const handleOptionChange=(e,value,field)=>{
+    
     setState({
       ...state,
       [field]:value ? value.label :''
@@ -456,7 +481,11 @@ const Batches = () => {
       country:state.country,
       marketing_ad:state.marketing_ad,
       repeat:state.repeat,
-      news:state.news
+      news:state.news,
+      endpoint:state.endpoint,
+      senderEmail:state.senderEmail,
+      subject:state.subject,
+      time:state.time
     },{headers:{
        Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
      }})
@@ -492,7 +521,11 @@ const Batches = () => {
         country:state.country,
         marketing_ad:state.marketing_ad,
         repeat:state.repeat,
-        news:state.news
+        news:state.news,
+        endpoint:state.endpoint,
+        senderEmail:state.senderEmail,
+        subject:state.subject,
+        time:state.time
       },
       
       {headers:{
@@ -526,6 +559,7 @@ const Batches = () => {
     const filteredOptions = senders.filter((option) =>
       option.email.toLowerCase().includes(searchText.toLowerCase())
     );
+    setSenders(filteredOptions)
     setFilteredSenders(filteredOptions);
   }
 
@@ -558,13 +592,13 @@ const Batches = () => {
 
   const handleSearchTextChange = (event) => {
     const searchText = event.target.value;
-    setState({...state,city:searchText})
+    setState({...state,country:searchText})
 
-    const filteredOptions = cities.filter((option) =>
-      option.name.toLowerCase().includes(searchText.toLowerCase())
+    const filteredOptions = countries.filter((option) =>
+      option.toLowerCase().includes(searchText.toLowerCase())
     );
     const limitedOptions = filteredOptions.slice(0, 20);
-    setFilteredCities(limitedOptions);
+    setFilteredCountries(limitedOptions);
   };
 
   const handleSearchSchool = (event) => {
@@ -577,6 +611,20 @@ const Batches = () => {
     const limitedOptions = filteredOptions.slice(0, 20);
     setFilteredSchools(limitedOptions);
   };
+
+  function getFilteredSenders() {
+    if (state.endpoint === 'Sendgrid') {
+      return filteredSenders
+        .filter((item) => item.platform === 'sendgrid')
+        .map((item) => ({ value: item.email, label: item.email }));
+    } else if (state.endpoint === 'Salesforce') {
+      return filteredSenders
+        .filter((item) => item.platform === 'salesforce')
+        .map((item) => ({ value: item.email, label: item.email }));
+    } else {
+      return filteredSenders.map((item) => ({ value: item.email, label: item.email }));
+    }
+  }
 
   const handleSearchSubject = (event) => {
     const searchText = event.target.value;
@@ -620,7 +668,7 @@ const Batches = () => {
             <Autocomplete
                 multiple
 
-                 defaultValue={isUpdate?state.city:[]}
+                 defaultValue={isUpdate?state.city.filter(item => item !== ""):[]}
                  onChange={(e,values)=>handleMultiState(values,'city')}
                  options={filteredCities?.map(item => item.name)}  
                  getOptionLabel={(option) => option}
@@ -628,6 +676,7 @@ const Batches = () => {
                  clearIcon={null}
                  renderInput={(params) => (
                      <TextField
+                     
                          {...params}
                          onChange={handleSearchTextChange}
                          label="Target City"
@@ -644,7 +693,7 @@ const Batches = () => {
             <Autocomplete
             multiple
                 
-                defaultValue={isUpdate?state.state:[]}
+                defaultValue={isUpdate?state.state.filter(item => item !== ""):[]}
                 id="tags-standard"
                 //  value={state.state}
                  onChange={(e,values)=>handleMultiState(values,"state")}
@@ -688,11 +737,12 @@ const Batches = () => {
                /> */}
                 <Autocomplete
                 multiple
-                 defaultValue={isUpdate?state.specialization:[]}
+                 defaultValue={isUpdate?state.specialization.filter(item => item !== ""):[]}
                  onChange={(e,values)=>handleMultiState(values,'specialization')}
-                 options={filteredSpecialization?.map(item =>item.specialization)}  
-                 getOptionLabel={(option) => option?option:''}
+                 options={filteredSpecialization?.map(item =>item.specialization) || []}  
+                 getOptionLabel={(option) => option || ''}
                  clearIcon={null}
+                 isOptionEqualToValue={(option, value) => option === value} // Customize the equality test if needed
 
                  renderInput={(params) => (
                      <TextField
@@ -712,7 +762,6 @@ const Batches = () => {
             <FormControl sx={{ml:15,mt: 6,width:200 }}>
             <Autocomplete
                 //  defaultValue={state.city}
-                 value={[]}
                  disabled
                  onChange={(e,value)=>handleOptionChange(e,value,'target_school')}
                  options={filteredSchools?.map(item =>({value: item.school, label: item.school}))}  
@@ -741,14 +790,15 @@ const Batches = () => {
             <Autocomplete
                 multiple
 
-                 defaultValue={isUpdate?state.city:[]}
+                 defaultValue={isUpdate?state.country.filter(item => item !== ""):[]}
                  onChange={(e,values)=>handleMultiState(values,'country')}
-                 options={filteredCities?.map(item => item.name)}  
+                 options={filteredCountries?.map(item => item)}  
                  getOptionLabel={(option) => option}
                  renderTags={renderTags}
                  clearIcon={null}
                  renderInput={(params) => (
                      <TextField
+                     
                          {...params}
                          onChange={handleSearchTextChange}
                          label="Origin Country"
@@ -779,6 +829,7 @@ const Batches = () => {
                   clearIcon={null}
                  renderInput={(params) => (
                      <TextField
+                     
                          {...params}
                          onChange={handleSearchState}
                          label="Origin School"
@@ -805,6 +856,7 @@ const Batches = () => {
                  clearIcon={null}
                  renderInput={(params) => (
                      <TextField
+                     required
                          {...params}
                          onChange={handleSearchTextChange}
                          label="Marketing Ad"
@@ -834,6 +886,7 @@ const Batches = () => {
                  renderInput={(params) => (
                      <TextField
                          {...params}
+                         required
                          onChange={handleSearchState}
                          label="Repeat"
                          variant="outlined"
@@ -845,16 +898,78 @@ const Batches = () => {
                />
             </FormControl>
 
-            <FormControl>
-
+            <FormControl sx={{width:200, mt:6}}>
+            
+      {/* <label>Select time:</label> */}
+      <TextField style={{ color: 'gray' }} onChange={(e)=>setState({...state, time:e.target.value})} defaultValue={state.time}  type="time" label='Select time'/>            
             </FormControl>
 
-            <FormControl sx={{width:200, mt:4}}>
+            <FormControl sx={{ml:15,width:200, mt:8}}>
             <FormControlLabel  control={<Checkbox onChange={(e)=>setState({...state, news:e.target.checked})} defaultChecked={state.news} />} label="Attach News" />
 
             </FormControl>
-           
-
+            <FormControl sx={{ width:200, mt:6 }}>
+            <Autocomplete
+                //  defaultValue={state.city}
+                defaultValue={isUpdate?{label:state.endpoint, value:state.endpoint}:null}
+                onChange={(e,value)=>handleOptionChange(e,value,'endpoint')}
+                 options={platforms?.map(item =>({value: item.value, label: item.label}))}  
+                 getOptionLabel={(option) => option.label}
+                 renderInput={(params) => (
+                     <TextField
+                         {...params}
+                        //  onChange={handleSearchSender}
+                         label="Select an endpoint"
+                         variant="outlined"
+                         required
+                         inputProps={{
+                             ...params.inputProps,
+                        }}
+                     />
+                  )}
+               />
+            </FormControl>
+            <FormControl sx={{ width:200, mt:6, ml:15 }}>
+            <Autocomplete
+                 defaultValue={isUpdate?{label:state.senderEmail, value:state.senderEmail}:null}
+                //  value={{label:state.senderEmail,value:state.senderEmail}}
+                 onChange={(e,value)=>handleOptionChange(e,value,'senderEmail')}
+                 options={getFilteredSenders()}  
+                 getOptionLabel={(option) => option.label}
+                 renderInput={(params) => (
+                     <TextField
+                         {...params}
+                         onChange={handleSearchSender}
+                         label="Select a sender"
+                         variant="outlined"
+                         required
+                         inputProps={{
+                             ...params.inputProps,
+                        }}
+                     />
+                  )}
+               />
+            </FormControl>
+            <FormControl sx={{ mt: 6,width:200 }}>
+            <Autocomplete
+                 defaultValue={isUpdate?{label:state.subject, value:state.subject}:null}
+                 onChange={(e,value)=>handleOptionChange(e,value,'subject')}
+                 options={filteredTemplates?.map(item =>({value: item.name, label: item.name}))}  
+                 getOptionLabel={(option) => option.label}
+                 renderInput={(params) => (
+                     <TextField
+                         {...params}
+                         onChange={handleSearchSubject}
+                         required
+                         label="Select a template"
+                         variant="outlined"
+                         inputProps={{
+                             ...params.inputProps,
+                        }}
+                     />
+                  )}
+               />
+            </FormControl>
                 </Grid>
               </Grid>
             </Grid>

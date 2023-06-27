@@ -70,6 +70,7 @@
     "react-quill": "^2.0.0",
     "react-redux": "7.2.6",
     "react-select": "^5.7.3",
+    "react-simple-timefield": "^3.3.1",
     "react-to-pdf": "0.0.14",
     "recharts": "2.1.6",
     "stylis": "4.0.10",
