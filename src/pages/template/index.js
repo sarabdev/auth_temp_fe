@@ -24,7 +24,7 @@ import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'
 import { DataGrid } from '@mui/x-data-grid'
-import { BASE_URL } from 'src/configs/config'
+const  BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 import Tooltip from '@mui/material/Tooltip'
 import IconButton from '@mui/material/IconButton'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
@@ -44,7 +44,6 @@ import { styled } from '@mui/material/styles'
 import CardContent from '@mui/material/CardContent'
 import moment from 'moment/moment'
 import toast from 'react-hot-toast'
-import { Fetch_Templates_Base_Url } from 'src/configs/config';
 // ** ThirdParty Components
 import axios from 'axios'
 
@@ -66,6 +65,7 @@ import AddTemplate from './add';
 //test
 
 
+const  Fetch_Templates_Base_Url = process.env.NEXT_PUBLIC_Fetch_Templates_Base_Url
 
 
 const modules = {

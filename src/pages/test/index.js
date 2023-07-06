@@ -1,6 +1,6 @@
 import React, { useRef ,useEffect} from 'react';
 import { render } from 'react-dom';
-import { BASE_URL } from 'src/configs/config';
+const  BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 import EmailEditor from 'react-email-editor';
 import axios from 'axios';
 

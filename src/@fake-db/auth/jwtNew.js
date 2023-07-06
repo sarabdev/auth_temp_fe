@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { BASE_URL } from 'src/configs/config'
+const  BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 // import { BASE_URL } from 'src/configs/config' // Replace with your actual API URL
-const BASE_URL2=`${BASE_URL}/users`
+const BASE_URL2=`${process.env.NEXT_PUBLIC_BASE_URL}/users`
 
 
 // Login endpoint

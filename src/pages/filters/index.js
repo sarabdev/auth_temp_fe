@@ -2,7 +2,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { statesData } from 'src/store/states'
 import Divider from '@mui/material/Divider';
-import { Fetch_Templates_Base_Url } from 'src/configs/config';
 
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -21,7 +20,7 @@ import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'
 import { DataGrid } from '@mui/x-data-grid'
-import { BASE_URL } from 'src/configs/config'
+const  BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 import Tooltip from '@mui/material/Tooltip'
 import IconButton from '@mui/material/IconButton'
 import EyeOutline from 'mdi-material-ui/EyeOutline'

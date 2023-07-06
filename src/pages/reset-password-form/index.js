@@ -16,7 +16,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import InputAdornment from '@mui/material/InputAdornment'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
-import { BASE_URL } from 'src/configs/config'
+const  BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 import toast from 'react-hot-toast'
 
 // ** Icons Imports

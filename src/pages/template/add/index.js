@@ -18,7 +18,7 @@ import TextField from '@mui/material/TextField';
 import CardContent from '@mui/material/CardContent'
 import axios from 'axios'
 import toast from 'react-hot-toast'
-import { BASE_URL } from 'src/configs/config'
+const  BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
 
 const modules = {

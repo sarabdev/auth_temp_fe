@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { CategoryScale } from 'chart.js'
-import { BASE_URL, API_KEY } from './config'
+const  BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
 export async function apiCall(type = 'GET', appendUrl, data = {}) {
   let URL = BASE_URL + appendUrl
