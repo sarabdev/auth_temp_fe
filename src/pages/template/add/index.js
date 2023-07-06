@@ -1,11 +1,12 @@
 // ** React Imports
 import { useEffect, useState, useCallback } from 'react'
-import ReactQuill from 'react-quill';
+// import ReactQuill from 'react-quill';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 
 // import 'react-quill/dist/quill.bubble.css';
 // import 'react-quill/dist/quill.core.css';
-import 'react-quill/dist/quill.snow.css';
+// import 'react-quill/dist/quill.snow.css';
 
 
 // ** MUI Imports
@@ -36,6 +37,11 @@ const modules = {
     matchVisual: false,
   }
 }
+
+const QuillNoSSRWrapper = dynamic(
+  () => import('react-quill'), 
+  { ssr: false } // This line is important. It's what prevents server-side render
+);
 
 const formats = [
   'header', 'font', 'size',
@@ -96,7 +102,7 @@ export default function AddTemplate(){
                 <Button type="submit" variant='contained'>Add</Button>
             </FormControl>
             <FormControl sx={{mt: 6}}>
-            <ReactQuill style={{width:"900px",height:"400px"}}  theme="snow" modules={modules} formats={formats} value={value} onChange={setValue} />
+            <QuillNoSSRWrapper style={{width:"900px",height:"400px"}}  theme="snow" modules={modules} formats={formats} value={value} onChange={setValue} />
               {/* <TextField value={template.body} fullWidth multiline name="body" onChange={handleChange} minRows={15}  id="outlined-basic" label="Body" variant="outlined" /> */}
             
             </FormControl>

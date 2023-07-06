@@ -6,11 +6,9 @@ import { universitiesData } from 'src/store/universities';
 // ** Next Import
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import ReactQuill from 'react-quill';
+// import ReactQuill from 'react-quill';
 
-// import 'react-quill/dist/quill.bubble.css';
-// import 'react-quill/dist/quill.core.css';
- import 'react-quill/dist/quill.snow.css';
+ //import 'react-quill/dist/quill.snow.css';
 //    
 import { useRouter } from 'next/router';
 
@@ -66,6 +64,10 @@ import AddTemplate from './add';
 
 
 //test
+const QuillNoSSRWrapper = dynamic(
+  () => import('react-quill'), 
+  { ssr: false } // This line is important. It's what prevents server-side render
+);
 
 
 const  Fetch_Templates_Base_Url = process.env.NEXT_PUBLIC_Fetch_Templates_Base_Url
@@ -555,7 +557,7 @@ const TableServerSide = () => {
            
             <FormControl sx={{mt: 6}}>
              
-            <ReactQuill required style={{width:"800px",height:"400px"}}  theme="snow" modules={modules} formats={formats} value={value} onChange={setValue} />
+            <QuillNoSSRWrapper required style={{width:"800px",height:"400px"}}  theme="snow" modules={modules} formats={formats} value={value} onChange={setValue} />
               {/* <TextField value={template.body} fullWidth multiline name="body" onChange={handleChange} minRows={15}  id="outlined-basic" label="Body" variant="outlined" /> */}
             
             </FormControl>
