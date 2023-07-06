@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { statesData } from 'src/store/states'
 import Divider from '@mui/material/Divider';
+import { Fetch_Templates_Base_Url } from 'src/configs/config';
 
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -473,6 +474,9 @@ const Batches = () => {
     handleClose()
     console.log(state)
   try{
+    
+
+console.log("filter"+state)
      const res=await axios.post(`${BASE_URL}/filters`,{
       name:state.name,
       cities:state.city,
@@ -788,8 +792,6 @@ const Batches = () => {
 
         <FormControl sx={{width:200 }}>
             <Autocomplete
-                multiple
-
                  defaultValue={isUpdate?state.country.filter(item => item !== ""):[]}
                  onChange={(e,values)=>handleMultiState(values,'country')}
                  options={filteredCountries?.map(item => item)}  
@@ -798,7 +800,7 @@ const Batches = () => {
                  clearIcon={null}
                  renderInput={(params) => (
                      <TextField
-                     
+                        required
                          {...params}
                          onChange={handleSearchTextChange}
                          label="Origin Country"
@@ -960,7 +962,7 @@ const Batches = () => {
                      <TextField
                          {...params}
                          onChange={handleSearchSubject}
-                         required
+                         
                          label="Select a template"
                          variant="outlined"
                          inputProps={{
