@@ -89,11 +89,7 @@ const AuthProvider = ({ children }) => {
 
   const loadInitials = () => {
     console.log('Initial point if I am logged in!')
-    dispatch(setProductAdvocatesLoadingTrue())
-    dispatch(setJobsLoadingTrue())
-    dispatch(fetchProductAdvocatesData())
-    dispatch(fetchJobsData())
-    dispatch(fetchSamplesData())
+    
   }
 
   const handleLogin = (params, errorCallback) => {

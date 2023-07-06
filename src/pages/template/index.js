@@ -1,14 +1,18 @@
 // ** React Imports
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback,useMemo } from 'react'
 import { statesData } from 'src/store/states';
 import { countriesData } from 'src/store/countries';
 import { universitiesData } from 'src/store/universities';
 // ** Next Import
 import Link from 'next/link'
-import ReactQuill from 'react-quill';
+import dynamic from 'next/dynamic'
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+dynamic(() => import('react-quill/dist/quill.snow.css'), { ssr: false });
+
 // import 'react-quill/dist/quill.bubble.css';
 // import 'react-quill/dist/quill.core.css';
-import 'react-quill/dist/quill.snow.css';
+// import 'react-quill/dist/quill.snow.css';
+//    
 import { useRouter } from 'next/router';
 
 // ** MUI Imports
@@ -96,6 +100,7 @@ const formats = [
 ]
 const TableServerSide = () => {
   // ** State
+  
   const router=useRouter()
   const [isLoading,setIsLoading]=useState(false)
   const [state,setState]=useState({
@@ -550,6 +555,7 @@ const TableServerSide = () => {
             </FormControl>
            
             <FormControl sx={{mt: 6}}>
+             
             <ReactQuill required style={{width:"800px",height:"400px"}}  theme="snow" modules={modules} formats={formats} value={value} onChange={setValue} />
               {/* <TextField value={template.body} fullWidth multiline name="body" onChange={handleChange} minRows={15}  id="outlined-basic" label="Body" variant="outlined" /> */}
             
