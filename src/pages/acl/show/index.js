@@ -4,7 +4,7 @@ import { useCallback, useContext, useState, useEffect } from 'react'
 // ** Context Imports
 import { AbilityContext } from 'src/layouts/components/acl/Can'
 import axios from 'axios'
-import { BASE_URL } from 'src/configs/config'
+const  BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'

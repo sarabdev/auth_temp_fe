@@ -1,7 +1,7 @@
 // ** React Imports
 import { createContext, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { BASE_URL } from 'src/configs/config'
+const  BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 // ** Next Import
 import { useRouter } from 'next/router'
 // import { BASE_URL } from 'src/configs/config'
@@ -89,11 +89,7 @@ const AuthProvider = ({ children }) => {
 
   const loadInitials = () => {
     console.log('Initial point if I am logged in!')
-    dispatch(setProductAdvocatesLoadingTrue())
-    dispatch(setJobsLoadingTrue())
-    dispatch(fetchProductAdvocatesData())
-    dispatch(fetchJobsData())
-    dispatch(fetchSamplesData())
+    
   }
 
   const handleLogin = (params, errorCallback) => {

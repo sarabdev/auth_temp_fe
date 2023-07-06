@@ -159,7 +159,7 @@ const LoginPage = () => {
       {!hidden ? (
         <Box sx={{ flex: 1, display: 'flex', position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
           <LoginIllustrationWrapper>
-            Email Management System
+            Email Management System 
             {/* <LoginIllustration alt='login-illustration' src={`/images/ascthem-logo.png`} /> */}
           </LoginIllustrationWrapper>
           <FooterIllustrationsV2 />

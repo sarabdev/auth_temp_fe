@@ -14,7 +14,7 @@ import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import toast from 'react-hot-toast'
 import RegisterManufacturerForm from 'src/pages/register-form'
-import { BASE_URL } from 'src/configs/config'
+const  BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
 const RegisterManufacturer = () => {
   const [email, setEmail] = useState('')

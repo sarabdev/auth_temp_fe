@@ -20,7 +20,7 @@ import FormHelperText from '@mui/material/FormHelperText'
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import toast from 'react-hot-toast'
-import { BASE_URL } from 'src/configs/config'
+const  BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
 // ** Icons Imports
 import EyeOutline from 'mdi-material-ui/EyeOutline'
