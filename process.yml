@@ -1,5 +1,5 @@
 apps:
-  - name: ascthem-dashboard
+  - name: ems-portal
     script: npx
     interpreter: none
     args: serve -s build -l 3000
