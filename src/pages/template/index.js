@@ -6,12 +6,11 @@ import { universitiesData } from 'src/store/universities';
 // ** Next Import
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
-dynamic(() => import('react-quill/dist/quill.snow.css'), { ssr: false });
+import ReactQuill from 'react-quill';
 
 // import 'react-quill/dist/quill.bubble.css';
 // import 'react-quill/dist/quill.core.css';
-// import 'react-quill/dist/quill.snow.css';
+ import 'react-quill/dist/quill.snow.css';
 //    
 import { useRouter } from 'next/router';
 
