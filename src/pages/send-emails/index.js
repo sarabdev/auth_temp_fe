@@ -110,7 +110,7 @@ const Batches = () => {
     async (sort, column) => {
       try{
       await axios
-        .get(`${BASE_URL}/batch`, {
+        .get(BASE_URL+"/batch", {
           headers: {
             Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
           }
@@ -132,7 +132,6 @@ const Batches = () => {
     [page, pageSize]
   )
   useEffect(() => {
-    console.log("fetchTableData")
     fetchTableData(sort, sortColumn)
   }, [fetchTableData, sort, sortColumn])
 
@@ -140,7 +139,7 @@ const Batches = () => {
 
   const fetchFilters=async()=>{
     try{
-      const response=await axios.get(`${BASE_URL}/filters`,{
+      const response=await axios.get(BASE_URL+"/filters",{
         headers: {
           Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
         }
@@ -155,7 +154,7 @@ const Batches = () => {
 
   const fetchSenders=async()=>{
     try{
-      const response=await axios.get(`${BASE_URL}/sender`,{
+      const response=await axios.get(BASE_URL+"/sender",{
         headers: {
           Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
         }
@@ -172,7 +171,7 @@ const Batches = () => {
 
        const fetchTemplates=async()=>{
         try{
-          const response=await axios.get(`${BASE_URL}/templates`,{
+          const response=await axios.get(BASE_URL+"/templates",{
             headers: {
               Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
             }
@@ -329,10 +328,9 @@ const Batches = () => {
     e.preventDefault()
     handleClose()
     try{
-    const res=await axios.post(`${BASE_URL}/batch`,{...state},{headers:{
+    const res=await axios.post(BASE_URL+"/batch",{...state},{headers:{
       Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
     }})
-    console.log(res)
     fetchTableData()
     if(res.data.success)
     toast.success('Filter added successfully.', {
@@ -354,7 +352,7 @@ const Batches = () => {
   const handleUpdate=async(e)=>{
     e.preventDefault()
     handleClose()
-    await axios.put(`${BASE_URL}/batch/${state.id}`,state,{headers:{
+    await axios.put(BASE_URL+"/batch/"+state.id,state,{headers:{
       Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
     }})
     fetchTableData()

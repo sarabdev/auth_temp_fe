@@ -6,7 +6,6 @@ import { apiCall } from 'src/configs/utils'
 
 // ** Fetch product_advocates
 export const fetchProductAdvocatesData = createAsyncThunk('product_advocates/fetchData', async params => {
-  console.log('Check NEW', params.active_status)
   // if(params.active_status == "true" || params.active_status == "false"){
   let response = await apiCall('POST', 'fetch_product_advocates', {
     ...params,
@@ -15,7 +14,6 @@ export const fetchProductAdvocatesData = createAsyncThunk('product_advocates/fet
     status: params.active_status,
     name_email: params.name_email
   })
-  // console.log('fetchProductAdvocatesData', response.data.body)
 
   return {
     totalRecords: response.data.body.total_records,
@@ -28,7 +26,6 @@ export const fetchProductAdvocateData = createAsyncThunk('product_advocate/fetch
     ...params,
     id: params.id
   })
-  console.log('fetchProductAdvocateData =>', response.data.body)
 
   return {
     totalRecords: response.data.body.total_records,
@@ -84,7 +81,6 @@ export const productAdvocatesSlice = createSlice({
   extraReducers: builder => {
     builder.addCase(fetchProductAdvocatesData.fulfilled, (state, action) => {
       const params = action.meta.arg
-      console.log('PARA', params)
       if (params.active_status === 'true' || params.active_status === 'false') {
         state.data = action.payload.result
       } else {

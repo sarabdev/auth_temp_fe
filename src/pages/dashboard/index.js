@@ -63,7 +63,7 @@ const TableServerSide = () => {
       setIsLoading(true)
       try{
       await axios
-        .get(`${BASE_URL}/users`,{
+        .get(BASE_URL+"/users",{
           headers: {
             Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
           }

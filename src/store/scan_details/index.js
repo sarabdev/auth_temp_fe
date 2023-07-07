@@ -4,7 +4,6 @@ import { apiCall } from 'src/configs/utils'
 export const fetchScanData = createAsyncThunk('/scan-details/fetchData', async params => {
   const { sort, sortColumn } = params
 
-  console.log(params, sortColumn)
 
   let response = await apiCall('GET', 'scan-details/fetchData', {
     params: {
@@ -12,7 +11,6 @@ export const fetchScanData = createAsyncThunk('/scan-details/fetchData', async p
       column: sortColumn
     }
   })
-  console.log('Dashboard Record', response.data)
 
   return {
     result: response.data

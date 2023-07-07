@@ -12,15 +12,7 @@ import axios from 'axios'
 
 // ** Config
 import authConfig from 'src/configs/auth'
-import {
-  setJobsLoadingTrue,
-  fetchJobsData,
-  setPrescribersLoadingTrue,
-  fetchPrescribersData,
-  setProductAdvocatesLoadingTrue,
-  fetchProductAdvocatesData,
-  fetchSamplesData
-} from 'src/store/export'
+
 
 // ** Defaults
 const defaultProvider = {
@@ -52,7 +44,7 @@ const AuthProvider = ({ children }) => {
       const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName)
       if (storedToken) {
         setLoading(true)
-        await axios.get(`${BASE_URL}/auth/me`, {
+        await axios.get(BASE_URL+"/auth/me", {
             headers: {
               Authorization: `Bearer ${storedToken}`
             }
@@ -60,7 +52,6 @@ const AuthProvider = ({ children }) => {
           .then(async response => {
             setLoading(false)
             const  userData  = response?.data
-            console.log(userData)
              const role = 'admin'
 
             // if (userData?.roleId === 2) {
@@ -88,23 +79,19 @@ const AuthProvider = ({ children }) => {
   }, [])
 
   const loadInitials = () => {
-    console.log('Initial point if I am logged in!')
     
   }
 
   const handleLogin = (params, errorCallback) => {
-    console.log("I am here")
-    console.log(params)
+   
     axios
     axios.post(BASE_URL+"/users/login", params)
     .then(async res => {
         window.localStorage.setItem(authConfig.storageTokenKeyName, res.data.token)
       })
       .then(() => {
-        console.log("authme")
-        console.log(window.localStorage.getItem(authConfig.storageTokenKeyName))
         axios
-          .get(`${BASE_URL}/auth/me`, {
+          .get(BASE_URL+"/auth/me", {
             headers: {
               Authorization: `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
             }
@@ -113,7 +100,6 @@ const AuthProvider = ({ children }) => {
             const returnUrl = router.query.returnUrl
             const userData = response.data
             const role = ''
-            console.log(userData)
             // if (userData.roleId === 2) {
             //   role = 'admin'
             // }

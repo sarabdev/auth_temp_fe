@@ -165,7 +165,7 @@ const TableServerSide = () => {
   const fetchTableData = useCallback(
     async (sort, column) => {
       setIsLoading(true)
-      await axios.get(`${BASE_URL}/templates`,{headers:{
+      await axios.get(BASE_URL+"/templates",{headers:{
             Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
           }})
         .then(res => {
@@ -189,7 +189,6 @@ const TableServerSide = () => {
 
   const handleSelected=(id)=>{
      let selectedTemplate=templates.filter((template)=>template.id==id)
-     console.log(selectedTemplate)
      setTemplate({
       id:selectedTemplate[0].id,
       name:selectedTemplate[0].name,
@@ -205,7 +204,7 @@ const TableServerSide = () => {
 
   const handleDelete=async(id)=>{
     try{
-      let response= await axios.delete(`${BASE_URL}/templates/${id}`,{headers:{
+      let response= await axios.delete(BASE_URL+"/templates/"+id,{headers:{
         Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
       }})
       if(!response?.data?.error){ 
@@ -220,7 +219,6 @@ const TableServerSide = () => {
       })
     }
     catch(e){
-      console.log(e)
       toast.error("Try again!", {
         duration: 2000
       })
@@ -318,7 +316,7 @@ const TableServerSide = () => {
 
   const updateTemplate=async()=>{
    try{
-    await axios.put(`${BASE_URL}/templates/${template.id}`,{name:template.name,body:value},{headers:{
+    await axios.put(BASE_URL+"/templates/"+template.id,{name:template.name,body:value},{headers:{
       Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
     }})
 
@@ -339,8 +337,7 @@ const TableServerSide = () => {
 
   const addTemplate=async()=>{
     try{
-      console.log(value)
-      await axios.post(`${BASE_URL}/templates`,{name:template.name,body:value},{
+      await axios.post(BASE_URL+"/templates",{name:template.name,body:value},{
         headers: {
           Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
         }
@@ -363,10 +360,9 @@ const TableServerSide = () => {
 
   const fetchTemplate=async()=>{
     try{
-      const response=await axios.post(`${Fetch_Templates_Base_Url}/api/content-by-country`, {Country:"Japan"},{ headers: {
+      const response=await axios.post(Fetch_Templates_Base_Url+"/api/content-by-country", {Country:"Japan"},{ headers: {
         'Access-Control-Allow-Origin': '*',
       },})
-       console.log(response)
       }
     catch(e){
 
@@ -411,15 +407,13 @@ const TableServerSide = () => {
     
     try{
   
-    const response=await axios.post(`${Fetch_Templates_Base_Url}/api/content`,
+    const response=await axios.post(Fetch_Templates_Base_Url+"/api/content",
      {
       Country:state.country,
       University: state.school
     }
     )
-    console.log(response)
-    console.log(state.country)
-    console.log(state.school)
+    
     setValue(response.data.html)
     setOpen(true)
     }

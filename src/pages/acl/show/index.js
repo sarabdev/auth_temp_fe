@@ -83,7 +83,7 @@ const ShowManufacturer = () => {
   const fetchTableData = useCallback(
     async (sort, column) => {
       await axios
-        .get(`${BASE_URL}user/manufacturer-user`, {
+        .get(BASE_URL+"user/manufacturer-user", {
           params: {
             sort,
             column

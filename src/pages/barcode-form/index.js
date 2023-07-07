@@ -52,7 +52,6 @@ const GenerateBarcodeFormLayout = () => {
     if (values.error) {
       toast.error(values.error)
     }
-    console.log('Values', values)
     try {
       const response = await fetch(`${BASE_URL}barcode/insert`, {
         method: 'POST',

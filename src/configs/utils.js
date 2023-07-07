@@ -4,7 +4,6 @@ const  BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
 export async function apiCall(type = 'GET', appendUrl, data = {}) {
   let URL = BASE_URL + appendUrl
-  console.log('apiCall', URL)
   let reqHeaders = {}
   reqHeaders['API-KEY'] = API_KEY
   if (type === 'POST' || type === 'PUT') {
@@ -37,7 +36,6 @@ export function convertDateToReadableFormat(str) {
 
     return str
   } catch (error) {
-    console.log('convertDateToReadableFormat -- error', str, error)
 
     return str
   }
@@ -51,7 +49,6 @@ export function convertTimeZoneToReadableDate(str) {
 
     return ''
   } catch (error) {
-    console.log('convertDateToReadableFormat -- error', str, error)
 
     return ''
   }
@@ -65,7 +62,6 @@ export function convertTimeZoneToReadableTime(str) {
 
     return ''
   } catch (error) {
-    console.log('convertDateToReadableFormat -- error', str, error)
 
     return ''
   }

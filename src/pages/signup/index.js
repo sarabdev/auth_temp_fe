@@ -156,7 +156,6 @@ const LoginPage = () => {
   const onSubmit = async data => {
     const { username,email, password } = data
     let res=await register(email, password,username )
-    console.log(res)
     if(res?.error){
       toast.error(res?.message, {
         duration: 2000

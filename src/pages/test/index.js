@@ -11,9 +11,8 @@ const App = (props) => {
     emailEditorRef.current.editor.exportHtml(async(data) => {
         const { design, html } = data;
 
-    await axios.post(`${BASE_URL}/templates`,{name:'New Template',body:html})
+    await axios.post(BASE_URL+"/templates",{name:'New Template',body:html})
 
-      console.log('exportHtml', html);
     });
   };
 

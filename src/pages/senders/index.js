@@ -109,7 +109,7 @@ const TableServerSide = () => {
     async (sort, column) => {
       setIsLoading(true)
       try{
-      await axios.get(`${BASE_URL}/sender`,{headers:{
+      await axios.get(BASE_URL+"/sender",{headers:{
             Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
           }})
         .then(res => {
@@ -119,7 +119,6 @@ const TableServerSide = () => {
         })
       }
       catch(e){
-        console.log(e)
         setIsLoading(false)
       }
     },
@@ -132,7 +131,7 @@ const TableServerSide = () => {
 
   const handleSelected=async(id,platform)=>{
     try{
-    let response=await axios.post(`${BASE_URL}/sender/deleteSender`,{id,platform},{headers:{
+    let response=await axios.post(BASE_URL+"/sender/deleteSender",{id,platform},{headers:{
       Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
     }})
 
@@ -156,7 +155,7 @@ const TableServerSide = () => {
 
   const fetchCities=async()=>{
     try{
-    const response=await axios.get(`${BASE_URL}/cities`,{
+    const response=await axios.get(BASE_URL+"/cities",{
       headers: {
         Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
       }
@@ -296,14 +295,12 @@ const TableServerSide = () => {
 
   const handleSubmit=async(e)=>{
     e.preventDefault()
-    console.log(state)
     handleClose()
     try{
-      let response=await axios.post(`${BASE_URL}/sender`,{...state},{headers:{
+      let response=await axios.post(BASE_URL+"/sender",{...state},{headers:{
           Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
         }})
 
-      console.log(response)
   
       if(!response?.data?.error){ 
         toast.success(response?.data?.message, {
@@ -317,7 +314,6 @@ const TableServerSide = () => {
       })
       }
       catch(error){
-        console.log(error)
         toast.error(error?.response?.data?.message, {
           duration: 2000
         })

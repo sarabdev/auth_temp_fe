@@ -83,7 +83,6 @@ const ManufacturerRegisterationForm = () => {
         })
       }
     } catch (error) {
-      console.log('CHECK', error)
     }
   }
 

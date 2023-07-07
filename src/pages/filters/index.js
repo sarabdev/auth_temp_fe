@@ -142,7 +142,7 @@ const Batches = () => {
   const fetchTableData = useCallback(
     async (sort, column) => {
       await axios
-        .get(`${BASE_URL}/filters`, {
+        .get(BASE_URL+"/filters", {
           headers: {
             Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
           }
@@ -160,7 +160,6 @@ const Batches = () => {
     [page, pageSize]
   )
   useEffect(() => {
-    console.log("fetchTableData")
     fetchTableData(sort, sortColumn)
   }, [fetchTableData, sort, sortColumn])
 
@@ -176,7 +175,7 @@ const Batches = () => {
 
   const fetchCities=async()=>{
     try{
-    const response=await axios.get(`${BASE_URL}/cities`,{
+    const response=await axios.get(BASE_URL+"/cities",{
       headers: {
         Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
       }
@@ -204,7 +203,7 @@ const Batches = () => {
 
   const fetchSenders=async()=>{
     try{
-      const response=await axios.get(`${BASE_URL}/sender`,{
+      const response=await axios.get(BASE_URL+"/sender",{
         headers: {
           Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
         }
@@ -220,7 +219,6 @@ const Batches = () => {
      const fetchStates=async()=>{
       try{
         setStates(statesData)
-        console.log(statesData)
         setFilteredStates(statesData.slice(0,20))
         }
         catch(e){
@@ -230,7 +228,7 @@ const Batches = () => {
 
          const fetchSpecializations=async()=>{
           try{
-            const response=await axios.get(`${BASE_URL}/specialization`,{
+            const response=await axios.get(BASE_URL+"/specialization",{
               headers: {
                 Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
               }
@@ -246,7 +244,7 @@ const Batches = () => {
 
            const fetchFilters=async()=>{
             try{
-              const response=await axios.get(`${BASE_URL}/filters`,{
+              const response=await axios.get(BASE_URL+"/filters",{
                 headers: {
                   Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
                 }
@@ -261,7 +259,7 @@ const Batches = () => {
 
              const fetchTemplates=async()=>{
               try{
-                const response=await axios.get(`${BASE_URL}/templates`,{
+                const response=await axios.get(BASE_URL+"/templates",{
                   headers: {
                     Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
                   }
@@ -287,7 +285,6 @@ const Batches = () => {
                 await fetchTemplates()
                 // await fetchSchools();
               } catch (error) {
-                console.log('Error:', error);
               }
             };
           
@@ -308,7 +305,7 @@ const Batches = () => {
 
  const handleDelete=async(id)=>{
   try{
-    let response= await axios.delete(`${BASE_URL}/filters/${id}`,{headers:{
+    let response= await axios.delete(BASE_URL+"/filters/"+id,{headers:{
       Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
     }})
     if(!response?.data?.error){ 
@@ -323,7 +320,6 @@ const Batches = () => {
     })
   }
   catch(e){
-    console.log(e)
     toast.error("Try again!", {
       duration: 2000
     })
@@ -332,7 +328,6 @@ const Batches = () => {
 
   const handleSelected=(id)=>{
    let selectedBatch=batchesList.filter((batch)=>batch.id===id)
-   console.log(selectedBatch[0])
    setState({
     id,
     name:selectedBatch[0].name,
@@ -471,12 +466,10 @@ const Batches = () => {
   const handleSubmit=async(e)=>{
     e.preventDefault()
     handleClose()
-    console.log(state)
   try{
     
 
-console.log("filter"+state)
-     const res=await axios.post(`${BASE_URL}/filters`,{
+     const res=await axios.post(BASE_URL+"/filters",{
       name:state.name,
       cities:state.city,
       states:state.state,
@@ -492,7 +485,6 @@ console.log("filter"+state)
     },{headers:{
        Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
      }})
-     console.log(res)
     fetchTableData()
     if(res.data.success)
     toast.success('Filter added successfully.', {
@@ -515,7 +507,7 @@ console.log("filter"+state)
     e.preventDefault()
     handleClose()
     try{
-      await axios.put(`${BASE_URL}/filters/${state.id}`,
+      await axios.put(BASE_URL+"/filters/"+state.id,
       {
         name:state.name,
         cities:state.city,

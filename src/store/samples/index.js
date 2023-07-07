@@ -14,7 +14,6 @@ export const fetchSamplesData = createAsyncThunk('samples/fetchData', async para
     prescriber: params.prescriber,
     sample_status: params.sample_status
   })
-  console.log('fetchSamplesData', response.data.body)
 
   return {
     totalRecords: response.data.body.result.total_count[0]['expr0'],

@@ -69,8 +69,7 @@ export default function AddTemplate(){
     const handleSubmit=async(e)=>{
       e.preventDefault()
       try{
-        console.log(value)
-        await axios.post(`${BASE_URL}/templates`,{name:template.name,body:value})
+        await axios.post(BASE_URL+"/templates",{name:template.name,body:value})
         setTemplate({
           name:"",
           body:""
