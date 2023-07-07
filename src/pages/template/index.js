@@ -8,7 +8,7 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 // import ReactQuill from 'react-quill';
 
- //import 'react-quill/dist/quill.snow.css';
+ import 'react-quill/dist/quill.snow.css';
 //    
 import { useRouter } from 'next/router';
 
