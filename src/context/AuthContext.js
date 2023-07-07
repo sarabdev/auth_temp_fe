@@ -96,8 +96,8 @@ const AuthProvider = ({ children }) => {
     console.log("I am here")
     console.log(params)
     axios
-      .post(`${BASE_URL}/users/login`, params)
-      .then(async res => {
+    axios.post(BASE_URL+"/users/login", params)
+    .then(async res => {
         window.localStorage.setItem(authConfig.storageTokenKeyName, res.data.token)
       })
       .then(() => {
