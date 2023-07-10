@@ -21,7 +21,7 @@ export const login = async (email, password) => {
 export const register = async (email, password, username) => {
   try {
     
-    const response = await axios.post(BASE_URL+"/signup", { email, password, username })
+    const response = await axios.post(BASE_URL2+"/signup", { email, password, username })
     const {token} = response.data
      return {error:false}
     // return token
