@@ -410,7 +410,6 @@ const TableServerSide = () => {
     const response=await axios.post(Fetch_Templates_Base_Url+"/api/content",
      {
       Country:state.country,
-      University: state.school
     }
     )
     
@@ -454,6 +453,7 @@ const TableServerSide = () => {
                  renderInput={(params) => (
                      <TextField
                          {...params}
+                         required
                          onChange={handleSearchTextChange}
                          label="Select an country"
                          variant="outlined"
@@ -467,7 +467,7 @@ const TableServerSide = () => {
 
             <FormControl sx={{ ml:15,width:200 }}>
             <Autocomplete
-                
+                disabled
                 id="tags-standard"
                 //  value={state.state}
                  onChange={(e,values)=>handleMultiState(values,"school")}
