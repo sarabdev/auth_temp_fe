@@ -36,6 +36,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { login, getMe } from 'src/@fake-db/auth/jwtNew'
 import { AuthContext } from 'src/context/AuthContext'
 import { useContext } from 'react'
+import toast from 'react-hot-toast'
 
 // ** Hooks
 import { useAuth } from 'src/hooks/useAuth'
@@ -151,6 +152,13 @@ const LoginPage = () => {
 
   const onSubmit = async data => {
     const { email, password } = data
+
+    if(password.length<6){
+      toast.error('Password should be 6 characters long or greater.', {
+        duration: 2000
+      })
+      return
+    }
     login({ email: email, password: password })
   }
 
