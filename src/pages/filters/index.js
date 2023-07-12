@@ -585,6 +585,16 @@ const Batches = () => {
     />
   ));
 
+  const handleSearchCity=(event)=>{
+    const searchText = event.target.value;
+    setState({...state,city:searchText})
+    const filteredOptions = cities.filter((option) =>
+      option.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+    const limitedOptions = filteredOptions.slice(0, 20);
+    setFilteredCities(limitedOptions);
+  }
+
   const handleSearchTextChange = (event) => {
     const searchText = event.target.value;
     setState({...state,country:searchText})
@@ -662,7 +672,6 @@ const Batches = () => {
             <FormControl sx={{width:200 }}>
             <Autocomplete
                 multiple
-
                  defaultValue={isUpdate?state.city.filter(item => item !== ""):[]}
                  onChange={(e,values)=>handleMultiState(values,'city')}
                  options={filteredCities?.map(item => item.name)}  
@@ -673,7 +682,7 @@ const Batches = () => {
                      <TextField
                      
                          {...params}
-                         onChange={handleSearchTextChange}
+                         onChange={handleSearchCity}
                          label="Target City"
                          variant="outlined"
                          inputProps={{
@@ -851,7 +860,7 @@ const Batches = () => {
                      <TextField
                      required
                          {...params}
-                         onChange={handleSearchTextChange}
+                        //  onChange={handleSearchTextChange}
                          label="Marketing Ad"
                          variant="outlined"
                          inputProps={{
