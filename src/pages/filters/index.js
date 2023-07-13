@@ -87,6 +87,7 @@ const Batches = () => {
     endpoint:'',
     senderEmail:'',
     subject:'',
+    emailSubject:''
   })
   const [filters,setFilters]=useState([])
   const [filteredFilters,setFilteredFilters]=useState([])
@@ -460,47 +461,49 @@ const Batches = () => {
     state:[],
     specialization:[],
     country:'',
+    emailSubject:''
     })
   }
 
   const handleSubmit=async(e)=>{
     e.preventDefault()
     handleClose()
-  try{
+    try{
     
 
-     const res=await axios.post(BASE_URL+"/filters",{
-      name:state.name,
-      cities:state.city,
-      states:state.state,
-      specializations:state.specialization,
-      country:state.country,
-      marketing_ad:state.marketing_ad,
-      repeat:state.repeat,
-      news:state.news,
-      endpoint:state.endpoint,
-      senderEmail:state.senderEmail,
-      subject:state.subject,
-      time:state.time
-    },{headers:{
-       Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
-     }})
-    fetchTableData()
-    if(res.data.success)
-    toast.success('Filter added successfully.', {
-      duration: 2000
-    })
-    else{
-      toast.error(res.data.message, {
-        duration: 2000
-      })
-    }
-    }
-    catch(e){
-      toast.error("Something went wrong.", {
-        duration: 2000
-      })
-    }  
+      const res=await axios.post(BASE_URL+"/filters",{
+       name:state.name,
+       cities:state.city,
+       states:state.state,
+       specializations:state.specialization,
+       country:state.country,
+       marketing_ad:state.marketing_ad,
+       repeat:state.repeat,
+       news:state.news,
+       endpoint:state.endpoint,
+       senderEmail:state.senderEmail,
+       subject:state.subject,
+       time:state.time,
+       emailSubject:state.emailSubject
+     },{headers:{
+        Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+      }})
+     fetchTableData()
+     if(res.data.success)
+     toast.success('Filter added successfully.', {
+       duration: 2000
+     })
+     else{
+       toast.error(res.data.message, {
+         duration: 2000
+       })
+     }
+     }
+     catch(e){
+       toast.error("Something went wrong.", {
+         duration: 2000
+       })
+     }  
   }
 
   const handleUpdate=async(e)=>{
@@ -520,7 +523,8 @@ const Batches = () => {
         endpoint:state.endpoint,
         senderEmail:state.senderEmail,
         subject:state.subject,
-        time:state.time
+        time:state.time, 
+        emailSubject:state.emailSubject
       },
       
       {headers:{
@@ -900,6 +904,9 @@ const Batches = () => {
                />
             </FormControl>
 
+            <FormControl sx={{ width:400, mb:2, mt:4, ml:2}}>
+              <TextField  required type='text' value={state.emailSubject} onChange={handleChange} id="standard-basic" name="emailSubject" label="Email subject" placeholder='Enter email subject' variant="standard" />
+            </FormControl>
             <FormControl sx={{width:200, mt:6}}>
             
       {/* <label>Select time:</label> */}
