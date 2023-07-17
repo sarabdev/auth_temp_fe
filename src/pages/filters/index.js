@@ -337,14 +337,15 @@ const Batches = () => {
   ,
   state:selectedBatch[0].states.split(',').map((value)=>value),
   specialization:selectedBatch[0].specializations.split(',').map((value)=>value),
-  country:selectedBatch[0].country.split(',').map((value)=>value),
+  country:selectedBatch[0].country,
   marketing_ad:selectedBatch[0].marketing_ad,
   repeat:selectedBatch[0].repeat,
   news:selectedBatch[0].news,
   endpoint:selectedBatch[0].endpoint,
   senderEmail:selectedBatch[0].senderEmail,
   subject:selectedBatch[0].subject,
-  time:selectedBatch[0].time
+  time:selectedBatch[0].time,
+  emailSubject:selectedBatch[0].emailSubject
   })
   }
 
@@ -467,9 +468,15 @@ const Batches = () => {
 
   const handleSubmit=async(e)=>{
     e.preventDefault()
-    handleClose()
     try{
-    
+    if(!state.news && state.subject.length<1){
+      toast.error("Please select template", {
+        duration: 2000
+      })
+      return
+    }
+    handleClose()
+
 
       const res=await axios.post(BASE_URL+"/filters",{
        name:state.name,
@@ -508,7 +515,14 @@ const Batches = () => {
 
   const handleUpdate=async(e)=>{
     e.preventDefault()
+    if(!state.news && state.subject.length<1){
+      toast.error("Please select template", {
+        duration: 2000
+      })
+      return
+    }
     handleClose()
+
     try{
       await axios.put(BASE_URL+"/filters/"+state.id,
       {
@@ -796,7 +810,7 @@ const Batches = () => {
 
         <FormControl sx={{width:200 }}>
             <Autocomplete
-                 defaultValue={isUpdate?state.country.filter(item => item !== ""):[]}
+                 defaultValue={isUpdate?state.country:""}
                  onChange={(e,values)=>handleMultiState(values,'country')}
                  options={filteredCountries?.map(item => item)}  
                  getOptionLabel={(option) => option}
@@ -804,7 +818,6 @@ const Batches = () => {
                  clearIcon={null}
                  renderInput={(params) => (
                      <TextField
-                        required
                          {...params}
                          onChange={handleSearchTextChange}
                          label="Origin Country"
@@ -862,7 +875,6 @@ const Batches = () => {
                  clearIcon={null}
                  renderInput={(params) => (
                      <TextField
-                     required
                          {...params}
                         //  onChange={handleSearchTextChange}
                          label="Marketing Ad"
