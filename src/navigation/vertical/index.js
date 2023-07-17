@@ -34,11 +34,11 @@ const navigation = () => {
       path:'/senders'
 
     },
-    {
-      title:"Send Emails",
-      icon:HomeOutline,
-      path:'/send-emails'
-    },
+    // {
+    //   title:"Send Emails",
+    //   icon:HomeOutline,
+    //   path:'/send-emails'
+    // },
     {
       title:'View Filters',
       icon:HomeOutline,
