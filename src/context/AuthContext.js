@@ -52,7 +52,15 @@ const AuthProvider = ({ children }) => {
           .then(async response => {
             setLoading(false)
             const  userData  = response?.data
-             const role = 'admin'
+          if(userData?.error){
+            setUser(null)
+            setIsInitialized(false)
+            window.localStorage.removeItem('userData')
+             window.localStorage.removeItem(authConfig.storageTokenKeyName)
+             router.push('/login')
+             return
+          }
+            const role = 'admin'
 
             // if (userData?.roleId === 2) {
             //   role = 'admin'
