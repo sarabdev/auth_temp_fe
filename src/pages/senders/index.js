@@ -182,7 +182,7 @@ const TableServerSide = () => {
      }
 
   useEffect(()=>{
-     fetchCities()
+    // fetchCities()
      fetchStates()
   },[])
 
@@ -442,7 +442,7 @@ const TableServerSide = () => {
         <DataGrid
           autoHeight
           pagination
-          rows={isLoading?[]:rows}
+          rows={rows}
           rowCount={total}
           loading={isLoading}
           columns={columns}
