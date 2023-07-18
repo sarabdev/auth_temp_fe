@@ -973,6 +973,7 @@ const Batches = () => {
             </FormControl>
             <FormControl sx={{ mt: 6,width:200 }}>
             <Autocomplete
+                disabled={state.news}
                  defaultValue={isUpdate?{label:state.subject, value:state.subject}:null}
                  onChange={(e,value)=>handleOptionChange(e,value,'subject')}
                  options={filteredTemplates?.map(item =>({value: item.name, label: item.name}))}  
