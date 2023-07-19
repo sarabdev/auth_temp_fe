@@ -468,7 +468,9 @@ const Batches = () => {
 
   const handleSubmit=async(e)=>{
     e.preventDefault()
-    try{
+    const localTime = moment(state.time, 'HH:mm');
+    const utcTime = localTime.utc();
+    const utcTimeString = utcTime.format('HH:mm');
     if(!state.news && state.subject.length<1){
       toast.error("Please select template", {
         duration: 2000
@@ -476,8 +478,7 @@ const Batches = () => {
       return
     }
     handleClose()
-
-
+    try{
       const res=await axios.post(BASE_URL+"/filters",{
        name:state.name,
        cities:state.city,
@@ -490,7 +491,7 @@ const Batches = () => {
        endpoint:state.endpoint,
        senderEmail:state.senderEmail,
        subject:state.subject,
-       time:state.time,
+       time:utcTimeString,
        emailSubject:state.emailSubject
      },{headers:{
         Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
@@ -973,6 +974,7 @@ const Batches = () => {
             </FormControl>
             <FormControl sx={{ mt: 6,width:200 }}>
             <Autocomplete
+                disabled={state.news}
                  defaultValue={isUpdate?{label:state.subject, value:state.subject}:null}
                  onChange={(e,value)=>handleOptionChange(e,value,'subject')}
                  options={filteredTemplates?.map(item =>({value: item.name, label: item.name}))}  

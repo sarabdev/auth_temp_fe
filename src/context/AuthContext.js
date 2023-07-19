@@ -38,6 +38,14 @@ const AuthProvider = ({ children }) => {
   const dispatch = useDispatch()
 
   const router = useRouter()
+
+  const redirectToLogin=()=>{
+    setUser(null)
+    setIsInitialized(false)
+    window.localStorage.removeItem('userData')
+    window.localStorage.removeItem(authConfig.storageTokenKeyName)
+    router.replace('/login')
+  }
   useEffect(() => {
     const initAuth = async () => {
       setIsInitialized(true)
@@ -51,36 +59,28 @@ const AuthProvider = ({ children }) => {
           })
           .then(async response => {
             setLoading(false)
-            const  userData  = response?.data
-          if(userData?.error){
-            setUser(null)
-            setIsInitialized(false)
-            window.localStorage.removeItem('userData')
-             window.localStorage.removeItem(authConfig.storageTokenKeyName)
-             router.push('/login')
-             return
+          if(response?.data?.authError){
+            redirectToLogin()
+            return
           }
-            const role = 'admin'
-
-            // if (userData?.roleId === 2) {
-            //   role = 'admin'
-            // }
-            // if (userData?.roleId === 3) {
-            //   role = 'client'
-            // }
+          const  userData  = response?.data
 
             const data = {
               id: userData?.id,
-               role: 'admin',
+              role: 'admin',
               fullName: userData?.username,
               username: userData?.username,
               email: userData?.email
             }
             setUser({ ...data })
-          }).catch((e)=>console.log(e))
+          }).catch((e)=>{
+            redirectToLogin()
+            return
+          })
         loadInitials()
       } else {
         setLoading(false)
+        redirectToLogin()
       }
     }
     initAuth()
