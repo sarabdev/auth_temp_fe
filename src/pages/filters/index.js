@@ -329,6 +329,9 @@ const Batches = () => {
 
   const handleSelected=(id)=>{
    let selectedBatch=batchesList.filter((batch)=>batch.id===id)
+   const utcTimeMoment = moment.utc(selectedBatch[0].time, 'HH:mm'); 
+    const localTimeMoment = utcTimeMoment.local(); 
+    const localTimeString = localTimeMoment.format('HH:mm');
    setState({
     id,
     name:selectedBatch[0].name,
@@ -344,7 +347,7 @@ const Batches = () => {
   endpoint:selectedBatch[0].endpoint,
   senderEmail:selectedBatch[0].senderEmail,
   subject:selectedBatch[0].subject,
-  time:selectedBatch[0].time,
+  time:localTimeString,
   emailSubject:selectedBatch[0].emailSubject
   })
   }
