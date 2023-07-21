@@ -91,6 +91,8 @@ const Batches = () => {
   })
   const [filters,setFilters]=useState([])
   const [filteredFilters,setFilteredFilters]=useState([])
+  const [marketingAds,setMarketingAds]=useState([])
+  const [filteredMarketingAds,setFilteredMarketingAds]=useState([])
   const [cities,setCities]=useState([])
   const [filteredCities,setFilteredCities]=useState([])
   const [schools,setSchools]=useState([])
@@ -190,6 +192,23 @@ const Batches = () => {
     
   }
 
+    const fetchMarketingAds=async()=>{
+    try{
+    const response=await axios.get(BASE_URL+"/marketing_ads",{
+      headers: {
+        Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+      }
+    });
+    console.log(response)
+    setMarketingAds(response.data)
+    setFilteredMarketingAds(response.data.slice(0,20))
+    }
+    catch(e){
+      fetchMarketingAds()
+    }
+    
+  }
+
   // const fetchSchools=async()=>{
   //   try{
   //   const response=await axios.get(`${BASE_URL}/schools`);
@@ -284,6 +303,7 @@ const Batches = () => {
                 await fetchSpecializations();
                 await fetchSenders()
                 await fetchTemplates()
+                await fetchMarketingAds()
                 // await fetchSchools();
               } catch (error) {
               }
@@ -580,6 +600,8 @@ const Batches = () => {
     setFilteredSenders(filteredOptions);
   }
 
+    
+
   const handleSearchSpecialization=(event)=>{
     const searchText = event.target.value;
     setState({...state,specialization:searchText})
@@ -615,6 +637,16 @@ const Batches = () => {
     );
     const limitedOptions = filteredOptions.slice(0, 20);
     setFilteredCities(limitedOptions);
+  }
+
+   const handleSearchMarketingAd=(event)=>{
+    const searchText = event.target.value;
+    setState({...state,marketing_ad:searchText})
+    const filteredOptions = marketingAds.filter((option) =>
+      option.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+    const limitedOptions = filteredOptions.slice(0, 20);
+    setFilteredMarketingAds(limitedOptions);
   }
 
   const handleSearchTextChange = (event) => {
@@ -873,14 +905,14 @@ const Batches = () => {
 
                  defaultValue={isUpdate?state.marketing_ad:''}
                  onChange={(e,values)=>handleMultiState(values,'marketing_ad')}
-                 options={marketingAdOptions?.map(item => item)}  
+                 options={filteredMarketingAds?.map(item => item.name)}  
                  getOptionLabel={(option) => option}
                  renderTags={renderTags}
                  clearIcon={null}
                  renderInput={(params) => (
                      <TextField
                          {...params}
-                        //  onChange={handleSearchTextChange}
+                         onChange={handleSearchMarketingAd}
                          label="Marketing Ad"
                          variant="outlined"
                          inputProps={{
