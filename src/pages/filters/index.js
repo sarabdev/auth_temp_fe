@@ -546,7 +546,9 @@ const Batches = () => {
       return
     }
     handleClose()
-
+    const localTime = moment(state.time, 'HH:mm');
+    const utcTime = localTime.utc();
+    const utcTimeString = utcTime.format('HH:mm');
     try{
       await axios.put(BASE_URL+"/filters/"+state.id,
       {
@@ -561,7 +563,7 @@ const Batches = () => {
         endpoint:state.endpoint,
         senderEmail:state.senderEmail,
         subject:state.subject,
-        time:state.time, 
+        time:utcTimeString, 
         emailSubject:state.emailSubject
       },
       
