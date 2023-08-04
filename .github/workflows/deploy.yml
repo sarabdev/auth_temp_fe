@@ -22,7 +22,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} <<EOF
             cd /home/bitnami/EMS-UI
-            git pull
+            git pull origin main
             npm install --legacy-peer-deps
             npm run build
             pm2 restart ems-ui
