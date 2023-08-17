@@ -388,7 +388,7 @@ const Batches = () => {
     },
     {
       flex: 0.2,
-      minWidth: 140,
+      minWidth: 170,
       headerName: 'Name',
       field: 'name',
       renderCell: params => (
@@ -424,7 +424,7 @@ const Batches = () => {
     },
     {
       flex: 0.2,
-      minWidth: 140,
+      minWidth: 100,
       headerName: 'Action',
       field: 'action',
       renderCell: params => (
@@ -432,16 +432,19 @@ const Batches = () => {
 
       )
     },
-    // {
-    //   flex:0.2,
-    //   minWidth:140,
-    //   headerName:'Action',
-    //   field:'action',
-    //   renderCell:params=>(
-    //     <Button  variant='contained' onClick={()=>{handleDelete(params.row.id)}}>Delete</Button>
-        
-    //     )
-    // }
+    {
+      flex: 0.2,
+      minWidth: 80,
+      headerName: 'Count',
+      field: 'count',
+      renderCell: params => (
+        <Tooltip title={params.row.count}>
+          <Typography variant='body2' sx={{ color: 'text.primary' }}>
+            {params.row.count?params.row.count:'-'}
+          </Typography>
+        </Tooltip>
+      )
+    },
   
     
   ]
