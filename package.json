@@ -17,7 +17,7 @@
     "@emotion/react": "11.7.0",
     "@emotion/server": "11.4.0",
     "@emotion/styled": "11.6.0",
-    "@hookform/resolvers": "2.4.0",
+    "@hookform/resolvers": "^3.2.0",
     "@mui/lab": "5.0.0-alpha.70",
     "@mui/material": "5.4.3",
     "@mui/x-data-grid": "5.5.1",
@@ -67,7 +67,7 @@
     "recharts": "2.1.6",
     "stylis": "4.0.10",
     "stylis-plugin-rtl": "2.1.1",
-    "yup": "0.32.9"
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "eslint": "7.32.0",
