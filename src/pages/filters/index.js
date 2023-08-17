@@ -433,6 +433,7 @@ const Batches = () => {
       )
     },
     {
+      /* adding count in filters */
       flex: 0.2,
       minWidth: 80,
       headerName: 'Count',
