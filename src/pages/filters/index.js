@@ -192,6 +192,7 @@ const Batches = () => {
     
   }
 
+  
     const fetchMarketingAds=async()=>{
     try{
     const response=await axios.get(BASE_URL+"/marketing_ads",{
