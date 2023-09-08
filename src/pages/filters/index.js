@@ -68,19 +68,19 @@ const Batches = () => {
   // ** State
   const [timeSeconds,setTimeSeconds]=useState("12:34:56")
   const marketingAdOptions=["Ad 1","Ad 2","Ad 3"]
-  const repeat=["Daily","Weekly","Monthly"]
+  const repeat=["Not Repeat","Daily","Weekly","Monthly"]
   const [state,setState]=useState({
     id:false,
     filter:"",
     name:"",
-    city:'',
-    state:'',
+    city:[],
+    state:[],
     specialization:[],
     target_school:'',
     country:'',
     origin_school:'',
     marketing_ad:'',
-    repeat:'',
+    repeat:'Not Repeat',
     time:'12:00',
     news:false,
     school:'',
@@ -121,7 +121,7 @@ const Batches = () => {
   const [countries,setCountries]=useState([...countriesData])
   const [filteredCountries,setFilteredCountries]=useState([...countriesData.slice(0,20)])
   const platforms=[{label:"Sendgrid",value:"sendgrid"},{label:"Salesforce", value:"salesforce"}]
-
+  const [count,setCount]=useState('-');
   const handleClickOpen = async (barcode, userId) => {
     // await axios.get(`${BASE_URL}product/getproduct/?barcode=${barcode}&userId=${userId}`).then(res => {
     //   if (res?.data) {
@@ -130,6 +130,7 @@ const Batches = () => {
     //     setOpen(true)
     //   }
     // })
+    setCount('-')
     setOpen(true)
   }
   const handleClose = () =>{ 
@@ -703,6 +704,30 @@ const Batches = () => {
     setFilteredTemplates(limitedOptions);
   };
 
+  const handleGetCount=async()=>{
+    try{
+      const res=await axios.post(BASE_URL+"/filters/getCount",{
+      
+       cities:state.city,
+       states:state.state,
+       specializations:state.specialization,
+       country:state.country,
+     },{headers:{
+        Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+      }})
+     
+      if(!res?.data?.error)
+      setCount(res.data.count)
+     else{
+      setCount('Error')
+     }
+     
+     }
+     catch(e){
+      setCount('Error')
+
+     } 
+  }
   return (
     <>
        <Dialog
@@ -726,8 +751,10 @@ const Batches = () => {
                 <FormControl sx={{ width:400, mb:6}}>
               <TextField  required type='text' value={state.name} onChange={handleChange} id="standard-basic" name="name" label="Name" placeholder='Enter filter name' variant="standard" />
             </FormControl>
+            <Button size="small" variant='contained' onClick={handleGetCount} >Get Count: {count}</Button>
+
             <br/>
-            <Typography variant='subtitle1' sx={{width:"100%",marginBottom:2}}>
+            <Typography variant='subtitle1' sx={{width:"100%",marginBottom:2, marginTop:2}}>
           Target Filters:
         </Typography>
             <FormControl sx={{width:200 }}>
@@ -932,10 +959,11 @@ const Batches = () => {
 
 
             <FormControl sx={{ ml:15,width:200 }}>
+
             <Autocomplete
             
                 
-                defaultValue={isUpdate?state.repeat:''}
+                defaultValue={isUpdate?state.repeat:'Not Repeat'}
                 id="tags-standard"
                 //  value={state.state}
                  onChange={(e,values)=>handleMultiState(values,"repeat")}
