@@ -53,7 +53,14 @@ const navigation = () => {
       title:'Templates',
       icon:HomeOutline,
       path:'/template'
-    }
+    }, 
+    
+      {
+        title:'Interesting Items',
+        icon:HomeOutline,
+        path:'/interesting-items'
+      }
+    
     // {
     //   path: '/acl',
     //   action: 'read',
