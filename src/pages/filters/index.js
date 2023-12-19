@@ -79,7 +79,6 @@ const Batches = () => {
     target_school:'',
     country:'',
     origin_school:'',
-    marketing_ad:'',
     repeat:'Not Repeat',
     time:'12:00',
     news:false,
@@ -87,12 +86,14 @@ const Batches = () => {
     endpoint:'',
     senderEmail:'',
     subject:'',
-    emailSubject:''
+    emailSubject:'',
+    interestingItem:''
   })
   const [filters,setFilters]=useState([])
   const [filteredFilters,setFilteredFilters]=useState([])
   const [marketingAds,setMarketingAds]=useState([])
   const [filteredMarketingAds,setFilteredMarketingAds]=useState([])
+  const [interestingItems,setInterestingItems]=useState([])
   const [cities,setCities]=useState([])
   const [filteredCities,setFilteredCities]=useState([])
   const [schools,setSchools]=useState([])
@@ -211,6 +212,22 @@ const Batches = () => {
     
   }
 
+
+  const fetchInterestingItems=async()=>{
+    try{
+    const response=await axios.get(BASE_URL+"/interesting-item",{
+      headers: {
+        Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
+      }
+    });
+    console.log(response)
+    setInterestingItems(response.data)
+    }
+    catch(e){
+      fetchMarketingAds()
+    }
+    
+  }
   // const fetchSchools=async()=>{
   //   try{
   //   const response=await axios.get(`${BASE_URL}/schools`);
@@ -305,7 +322,7 @@ const Batches = () => {
                 await fetchSpecializations();
                 await fetchSenders()
                 await fetchTemplates()
-                await fetchMarketingAds()
+                await fetchInterestingItems()                
                 // await fetchSchools();
               } catch (error) {
               }
@@ -370,7 +387,8 @@ const Batches = () => {
   senderEmail:selectedBatch[0].senderEmail,
   subject:selectedBatch[0].subject,
   time:localTimeString,
-  emailSubject:selectedBatch[0].emailSubject
+  emailSubject:selectedBatch[0].emailSubject,
+  interestingItem: selectedBatch[0].interestingItem
   })
   }
 
@@ -491,7 +509,8 @@ const Batches = () => {
     state:[],
     specialization:[],
     country:'',
-    emailSubject:''
+    emailSubject:'',
+    interestingItem:''
     })
   }
 
@@ -521,7 +540,8 @@ const Batches = () => {
        senderEmail:state.senderEmail,
        subject:state.subject,
        time:utcTimeString,
-       emailSubject:state.emailSubject
+       emailSubject:state.emailSubject,
+       interestingItem: state.interestingItem
      },{headers:{
         Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
       }})
@@ -570,7 +590,8 @@ const Batches = () => {
         senderEmail:state.senderEmail,
         subject:state.subject,
         time:utcTimeString, 
-        emailSubject:state.emailSubject
+        emailSubject:state.emailSubject,
+        interestingItem: state.interestingItem
       },
       
       {headers:{
@@ -937,17 +958,17 @@ const Batches = () => {
         <FormControl sx={{width:200 }}>
             <Autocomplete
 
-                 defaultValue={isUpdate?state.marketing_ad:''}
-                 onChange={(e,values)=>handleMultiState(values,'marketing_ad')}
-                 options={filteredMarketingAds?.map(item => item.name)}  
+                 defaultValue={isUpdate?state.interestingItem:''}
+                 onChange={(e,values)=>handleMultiState(values,'interestingItem')}
+                 options={interestingItems?.map(item => item.name)}  
                  getOptionLabel={(option) => option}
-                 renderTags={renderTags}
+                //  renderTags={renderTags}
                  clearIcon={null}
                  renderInput={(params) => (
                      <TextField
                          {...params}
-                         onChange={handleSearchMarketingAd}
-                         label="Marketing Ad"
+                        //  onChange={handleSearchMarketingAd}
+                         label="Interesting Item"
                          variant="outlined"
                          inputProps={{
                              ...params.inputProps,
