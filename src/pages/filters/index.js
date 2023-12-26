@@ -1093,7 +1093,7 @@ const Batches = () => {
        
        
         <DialogActions className='dialog-actions-dense'>
-          <Button>Close</Button>
+          <Button onClick={handleClose}>Close</Button>
           {!isUpdate ? <Button type='submit'  variant='contained'>{'Create'}</Button>:<Button type="submit" variant='contained'>Update</Button>}
 
         </DialogActions>
