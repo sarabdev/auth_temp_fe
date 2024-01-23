@@ -57,7 +57,9 @@ const TableServerSide = () => {
    id:false,
    name:"",
    heading:"",
-   description:""
+   description:"",
+   question:"",
+   answer: ""
     
   })
   const platforms=[{label:"Sendgrid",value:"sendgrid"},{label:"Salesforce", value:"salesforce"}]
@@ -139,6 +141,10 @@ const TableServerSide = () => {
      name:selectedItem[0].name,
      heading:selectedItem[0].heading,
      description:selectedItem[0].description,
+     question:selectedItem[0].question,
+     answer:selectedItem[0].answer,
+
+
    })
    }
  
@@ -257,11 +263,11 @@ const TableServerSide = () => {
     {
       flex: 0.2,
       minWidth: 240,
-      headerName: 'Description',
-      field: 'description',
+      headerName: 'Question',
+      field: 'question',
       renderCell: params => (
         <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.description}
+          {params.row.question}
         </Typography>
       )
 
@@ -334,7 +340,9 @@ const TableServerSide = () => {
       let response=await axios.put(BASE_URL+"/interesting-item/"+state.id,{
         name:state.name,
         heading: state.heading,
-        description: state.description
+        description: state.description,
+        question: state.question,
+        answer: state.answer
       },{headers:{
           Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
         }})
@@ -360,7 +368,9 @@ const TableServerSide = () => {
       let response=await axios.post(BASE_URL+"/interesting-item",{
         name:state.name,
         heading: state.heading,
-        description: state.description
+        description: state.description,
+        question: state.question,
+        answer: state.answer
       },{headers:{
           Authorization:`Bearer ${window.localStorage.getItem('accessToken')}`
         }})
@@ -409,7 +419,10 @@ const TableServerSide = () => {
             </FormControl>
 
             <FormControl sx={{padding:5, width:550, mb:4}}>
-                  <TextField minRows={4} required value={state.description} onChange={handleChange} name="description" type='text' multiline id='textarea-outlined' placeholder='Enter description for joke/recipe...' label='Description' />
+                  <TextField minRows={2} required value={state.question} onChange={handleChange} name="question" type='text' multiline id='textarea-outlined' placeholder='Enter question for joke...' label='Question' />
+            </FormControl>
+            <FormControl sx={{padding:5, width:550, mb:4}}>
+                  <TextField minRows={2} required value={state.answer} onChange={handleChange} name="answer" type='text' multiline id='textarea-outlined' placeholder='Enter answer for joke...' label='Answer' />
             </FormControl>
         <DialogActions className='dialog-actions-dense'>
           <Button onClick={handleClose}>Discard</Button>
