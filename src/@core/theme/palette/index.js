@@ -49,7 +49,7 @@ const DefaultPalette = (mode, skin, themeColor) => {
     primary: {
       light: '#9E69FD',
       main: '#ED3237',
-      dark: '#804BDF',
+      // dark: '#804BDF',
       contrastText: '#FFF'
     },
     secondary: {
