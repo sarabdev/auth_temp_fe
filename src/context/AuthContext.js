@@ -12,6 +12,7 @@ import axios from 'axios'
 
 // ** Config
 import authConfig from 'src/configs/auth'
+import { ContentSaveAllOutline } from 'mdi-material-ui'
 
 
 // ** Defaults
@@ -39,6 +40,8 @@ const AuthProvider = ({ children }) => {
 
   const router = useRouter()
 
+  
+  
   const redirectToLogin=()=>{
     setUser(null)
     setIsInitialized(false)
@@ -52,7 +55,7 @@ const AuthProvider = ({ children }) => {
       const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName)
       if (storedToken) {
         setLoading(true)
-        await axios.get(BASE_URL+"/auth/me", {
+        await axios.get(BASE_URL+"/users/me", {
             headers: {
               Authorization: `Bearer ${storedToken}`
             }
@@ -64,15 +67,28 @@ const AuthProvider = ({ children }) => {
             return
           }
           const  userData  = response?.data
-
+          console.log(userData)
+          let role="No_Access"
+          for (const element of userData.access) {
+        if (element.role.name === "Auth_Admin"){
+          role="Auth_Admin"
+          break;
+        }
+        
+        else if(element.role.name=="Super_Admin") {
+           role="Super_Admin"
+           break; // Stop looping if role is found
+        }
+        }
             const data = {
               id: userData?.id,
-              role: 'admin',
+              role: role,
               fullName: userData?.username,
               username: userData?.username,
-              email: userData?.email
+              email: userData?.email,
+              companyId: userData?.company?.id
             }
-            setUser({ ...data })
+            setUser({ ...data, access: userData?.access })
           }).catch((e)=>{
             redirectToLogin()
             return
@@ -93,13 +109,14 @@ const AuthProvider = ({ children }) => {
   const handleLogin = (params, errorCallback) => {
    
     axios
-    axios.post(BASE_URL+"/users/login", params)
+    axios.post(BASE_URL+"/auth/login", params)
     .then(async res => {
-        window.localStorage.setItem(authConfig.storageTokenKeyName, res.data.token)
+      console.log(res)
+        window.localStorage.setItem(authConfig.storageTokenKeyName, res.data.access_token)
       })
       .then(() => {
         axios
-          .get(BASE_URL+"/auth/me", {
+          .get(BASE_URL+"/users/me", {
             headers: {
               Authorization: `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
             }
@@ -107,7 +124,22 @@ const AuthProvider = ({ children }) => {
           .then(async response => {
             const returnUrl = router.query.returnUrl
             const userData = response.data
-            const role = ''
+            console.log(userData)
+            let hasRequiredRole = false;
+            let role="No_Access"
+            for (const element of userData.access) {
+          if (element.role.name === "Auth_Admin"){
+            role="Auth_Admin"
+            break;
+          }
+          
+          else if(element.role.name=="Super_Admin") {
+             role="Super_Admin"
+             break; // Stop looping if role is found
+          }
+          }
+
+          
             // if (userData.roleId === 2) {
             //   role = 'admin'
             // }
@@ -117,12 +149,13 @@ const AuthProvider = ({ children }) => {
 
             const data = {
               id: userData.id,
-              role: 'admin',
+              role: role,
               fullName: '',
-              username: userData.username,
-              email: userData.email
+              username: userData.userName,
+              email: userData.userEmail,
+              companyId: userData.company.id
             }
-            setUser({ ...data })
+            setUser({ ...data, access:userData.access })
             window.localStorage.setItem('userData', JSON.stringify(data))
             const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
             router.replace(redirectURL)

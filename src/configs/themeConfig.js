@@ -3,7 +3,7 @@ import CircleOutline from 'mdi-material-ui/CircleOutline'
 
 const themeConfig = {
   // ** Layout Configs
-  templateName: 'EMS' /* App Name */,
+  templateName: 'Samodrei-Auth' /* App Name */,
   layout: 'vertical' /* vertical | horizontal */,
   mode: 'light' /* light | dark */,
   direction: 'ltr' /* ltr | rtl */,

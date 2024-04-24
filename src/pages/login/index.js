@@ -167,7 +167,7 @@ const LoginPage = () => {
       {!hidden ? (
         <Box sx={{ flex: 1, display: 'flex', position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
           <LoginIllustrationWrapper>
-            Email Management System 
+            Samodrei Auth Platform 
             {/* <LoginIllustration alt='login-illustration' src={`/images/ascthem-logo.png`} /> */}
           </LoginIllustrationWrapper>
           <FooterIllustrationsV2 />
@@ -254,6 +254,8 @@ const LoginPage = () => {
                   </g>
                 </g>
               </svg> */}
+                            <img height={40} alt={"logo"} src="/images/favicon.png" />
+
               <Typography
                 variant='h6'
                 sx={{
