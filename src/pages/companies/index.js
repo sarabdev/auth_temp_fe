@@ -50,18 +50,9 @@ import moment from 'moment/moment'
 
 // ** ThirdParty Components
 import axios from 'axios'
-import  AsyncCreatable from 'react-select/async-creatable';
 
 
-// ** Custom Components
-import CustomChip from 'src/@core/components/mui/chip'
-import CustomAvatar from 'src/@core/components/mui/avatar'
-import ServerSideToolbar from 'src/views/table/data-grid/ServerSideToolbar'
 
-// ** Utils Import
-import { getInitials } from 'src/@core/utils/get-initials'
-import { update } from 'draft-js/lib/DefaultDraftBlockRenderMap'
-import { batch } from 'react-redux'
 import toast from 'react-hot-toast'
 import { countriesData } from 'src/store/countries';
 
@@ -233,14 +224,14 @@ const Batches = () => {
       name: details.name,
       address: details.address,
       applicationIds: details.selectedApplications,
-      logoUrl:"test",
-      url:"w343"
+     
     })
     
     toast.success('Company  added successfully.', {
       duration: 2000
     })
-   
+    handleClose()
+   fetchTableData()
   }
   catch(e){
 

@@ -21,7 +21,7 @@ export const getHomeRoute = role => {
   else if(role=="Super_Admin")
      return '/companies'
   else
-     return "/401"
+     return "/applications"
 }
 
 const Home = () => {

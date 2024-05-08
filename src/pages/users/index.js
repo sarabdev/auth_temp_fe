@@ -49,7 +49,9 @@ const TableServerSide = () => {
 
   const applicationsData2 = [
     { id: 1, name: 'Auth Dashboard', roles: [{ name: 'Auth_Admin', id: 2 }] },
-    { id: 2, name: 'EMS', roles: [{ name: 'Admin', id: 3 }] }
+    { id: 2, name: 'EMS', roles: [{ name: 'Admin', id: 3 }] },
+    { id: 4, name: 'Ascthem', roles: [{ name: 'Admin', id: 3 }, {name:"Manufacturer", id: 7}] }
+
   ]
   const [applicationsData, setApplicationsData] = useState(applicationsData2)
   const [selectedApp, setSelectedApp] = useState('')
@@ -147,6 +149,8 @@ const TableServerSide = () => {
       toast.success('User added successfully.', {
         duration: 2000
       })
+      handleClose()
+      fetchTableData()
     } catch (e) {}
   }
 

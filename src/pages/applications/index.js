@@ -20,22 +20,18 @@ const TableServerSide = () => {
   const router = useRouter()
   const [applications, setApplications] = useState([])
 
-  const [cards, setCards] = useState([
-    { id: 1, title: 'First Inner Card', link: '/first' },
-    { id: 2, title: 'Second Inner Card', link: '/second' },
-    { id: 3, title: 'Third Inner Card', link: '/third' }
-  ])
+ 
 
   const fetchApplications = async () => {
     try {
-      const response = await axios.get(BASE_URL + '/companies/findMyCompany', {
+      const response = await axios.get(BASE_URL + '/applications/findMyApplications', {
         headers: {
           Authorization: `Bearer ${window.localStorage.getItem('accessToken')}`
         }
       })
 
       console.log(response.data)
-      setApplications(response.data[0].applications)
+      setApplications(response.data)
       //setCities(response.data)
       //  setFilteredCities(response.data.slice(0,20))
     } catch (e) {
@@ -49,7 +45,7 @@ const TableServerSide = () => {
   }, [])
   // Function to handle inner card click
   const handleCardClick = link => {
-    router.push(link)
+    window.open(`${link}/?token=${window.localStorage.getItem('accessToken')}`, '_blank');
   }
 
   const applicationIcons = {
@@ -118,7 +114,7 @@ const TableServerSide = () => {
                 },
                 cursor: 'pointer'
               }}
-              onClick={() => handleCardClick(card.link)}
+              onClick={() => handleCardClick(card.url)}
             >
               {applicationIcons[card.name]}
               <Typography variant='h8' sx={{ textAlign: 'center', marginTop: '10px' }}>

@@ -63,6 +63,17 @@ else if(userData?.role=="Auth_Admin"){
     
   ]
 }
+else{
+  return [
+    {
+      title: "Applications",
+      icon:HomeOutline,
+      path:"/applications",
+     
+    }
+    
+  ]
+}
   // return [
   //   // {
   //   //   title: 'Users',

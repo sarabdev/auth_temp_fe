@@ -31,6 +31,7 @@ const AuthContext = createContext(defaultProvider)
 
 const AuthProvider = ({ children }) => {
   // ** States
+  const [returnUrl, setReturnUrl]=useState('')
   const [user, setUser] = useState(defaultProvider.user)
   const [loading, setLoading] = useState(defaultProvider.loading)
   const [isInitialized, setIsInitialized] = useState(defaultProvider.isInitialized)
@@ -49,8 +50,24 @@ const AuthProvider = ({ children }) => {
     window.localStorage.removeItem(authConfig.storageTokenKeyName)
     router.replace('/login')
   }
+
+  useEffect(() => {
+    if (router.isReady) {
+      // Code using query
+      console.log(router.query);
+      window.localStorage.removeItem("returnUrl")
+      if(router?.query?.returnUrl){
+          window.localStorage.setItem("returnUrl",router?.query?.returnUrl)
+          setReturnUrl(router.query.returnUrl)
+      }
+      // this will set the state before component is mounted
+    }
+  }, [router.isReady]);
   useEffect(() => {
     const initAuth = async () => {
+      console.log("initi auth")
+      //setReturnUrl(router.query.returnUrl)
+      //console.log(router.query.returnUrl)
       setIsInitialized(true)
       const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName)
       if (storedToken) {
@@ -68,7 +85,7 @@ const AuthProvider = ({ children }) => {
           }
           const  userData  = response?.data
           console.log(userData)
-          let role="No_Access"
+          let role="App_User"
           for (const element of userData.access) {
         if (element.role.name === "Auth_Admin"){
           role="Auth_Admin"
@@ -80,6 +97,11 @@ const AuthProvider = ({ children }) => {
            break; // Stop looping if role is found
         }
         }
+        
+        // if(role=="App_User" && window.localStorage.getItem("returnUrl")){
+        //   console.log("I am here")
+        //   router.replace(window.localStorage.getItem("returnUrl"))
+        // }
             const data = {
               id: userData?.id,
               role: role,
@@ -89,6 +111,15 @@ const AuthProvider = ({ children }) => {
               companyId: userData?.company?.id
             }
             setUser({ ...data, access: userData?.access })
+            console.log(data)
+           if(role=="App_User" && window.localStorage.getItem("returnUrl")){
+            router.replace(`${window.localStorage.getItem("returnUrl")}/token?token=${storedToken}`)
+
+           }
+           else{
+           const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+            router.replace(redirectURL)
+           }
           }).catch((e)=>{
             redirectToLogin()
             return
@@ -99,8 +130,9 @@ const AuthProvider = ({ children }) => {
         redirectToLogin()
       }
     }
+    if(router.isReady)
     initAuth()
-  }, [])
+  }, [router.isReady])
 
   const loadInitials = () => {
     
@@ -108,7 +140,7 @@ const AuthProvider = ({ children }) => {
 
   const handleLogin = (params, errorCallback) => {
    
-    axios
+    
     axios.post(BASE_URL+"/auth/login", params)
     .then(async res => {
       console.log(res)
@@ -126,7 +158,7 @@ const AuthProvider = ({ children }) => {
             const userData = response.data
             console.log(userData)
             let hasRequiredRole = false;
-            let role="No_Access"
+            let role="App_User"
             for (const element of userData.access) {
           if (element.role.name === "Auth_Admin"){
             role="Auth_Admin"
@@ -138,7 +170,7 @@ const AuthProvider = ({ children }) => {
              break; // Stop looping if role is found
           }
           }
-
+         
           
             // if (userData.roleId === 2) {
             //   role = 'admin'
@@ -146,6 +178,7 @@ const AuthProvider = ({ children }) => {
             // if (userData.roleId === 3) {
             //   role = 'client'
             // }
+            console.log(userData)
 
             const data = {
               id: userData.id,
@@ -153,12 +186,17 @@ const AuthProvider = ({ children }) => {
               fullName: '',
               username: userData.userName,
               email: userData.userEmail,
-              companyId: userData.company.id
+              companyId: userData?.company?.id
             }
             setUser({ ...data, access:userData.access })
             window.localStorage.setItem('userData', JSON.stringify(data))
+            if(role=="App_User" && window.localStorage.getItem("returnUrl")){
+              router.replace(`${window.localStorage.getItem("returnUrl")}/token?token=${window.localStorage.getItem(authConfig.storageTokenKeyName)}`)
+  
+             }
             const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
             router.replace(redirectURL)
+        
           })
         loadInitials()
       })
