@@ -115,7 +115,7 @@ const defaultValues = {
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false)
-  const router=useRouter()
+  const router = useRouter()
   // ** Hooks
   const auth = useAuth()
   const theme = useTheme()
@@ -153,7 +153,7 @@ const LoginPage = () => {
   const onSubmit = async data => {
     const { email, password } = data
 
-    if(password.length<6){
+    if (password.length < 6) {
       toast.error('Password should be 6 characters long or greater.', {
         duration: 2000
       })
@@ -166,10 +166,11 @@ const LoginPage = () => {
     <Box className='content-right'>
       {!hidden ? (
         <Box sx={{ flex: 1, display: 'flex', position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
-          <LoginIllustrationWrapper>
-            Samodrei Auth Platform 
-            {/* <LoginIllustration alt='login-illustration' src={`/images/ascthem-logo.png`} /> */}
-          </LoginIllustrationWrapper>
+          {/* <LoginIllustrationWrapper> */}
+          {/* Samodrei Auth Platform */}
+          {/* <LoginIllustration alt='login-illustration' src={`/images/ascthem-logo.png`} /> */}
+          {/* </LoginIllustrationWrapper> */}
+          <img height={120} alt={'logo'} src='/images/favicon.png' />
           <FooterIllustrationsV2 />
         </Box>
       ) : null}
@@ -254,7 +255,7 @@ const LoginPage = () => {
                   </g>
                 </g>
               </svg> */}
-                            <img height={40} alt={"logo"} src="/images/favicon.png" />
+              <img height={40} alt={'logo'} src='/images/favicon.png' />
 
               <Typography
                 variant='h6'
@@ -343,17 +344,17 @@ const LoginPage = () => {
               <Box
                 sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
               >
-                {/* <FormControlLabel control={<Checkbox />} label='Remember Me' />
+                <FormControlLabel control={<Checkbox />} label='Remember Me' />
                 <Link passHref href='/forgot-password'>
                   <LinkStyled>Forgot Password?</LinkStyled>
-                </Link> */}
+                </Link>
               </Box>
               <Button fullWidth size='large' type='submit' variant='contained' sx={{ marginBottom: 3 }}>
                 Login
               </Button>
-              <Button onClick={()=>router.replace('/signup')} fullWidth size='large' sx={{ marginBottom: 7 }}>
+              {/* <Button onClick={() => router.replace('/signup')} fullWidth size='large' sx={{ marginBottom: 7 }}>
                 Register
-              </Button>
+              </Button> */}
               <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
                 {/* <Typography variant='body2' sx={{ marginRight: 2 }}>
                   New on our platform?

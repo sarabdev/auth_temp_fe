@@ -164,6 +164,7 @@ const VerticalNavHeader = props => {
                 </g>
               </g>
             </svg> */}
+            <img height={40} alt={'logo'} src='/images/favicon.png' />
             <HeaderTitle variant='h6' sx={{ ...menuCollapsedStyles, ...(navCollapsed && !navHover ? {} : { ml: 3 }) }}>
               {themeConfig.templateName}
             </HeaderTitle>

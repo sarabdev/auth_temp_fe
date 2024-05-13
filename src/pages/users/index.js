@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback, useContext } from 'react'
 
 // ** Next Import
 import Link from 'next/link'
-import { ListItem } from '@mui/material'
+import { ListItem, colors } from '@mui/material'
 import { ListItemText } from '@mui/material'
 // ** MUI Imports
 import Select from '@mui/material/Select'
@@ -18,6 +18,8 @@ import CardHeader from '@mui/material/CardHeader'
 import { DataGrid } from '@mui/x-data-grid'
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 import Tooltip from '@mui/material/Tooltip'
+import EditIcon from 'mdi-material-ui/LeadPencil'
+import IconButton from '@mui/material/IconButton'
 
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -37,7 +39,6 @@ const TableServerSide = () => {
   // ** State
   const userData = JSON.parse(window.localStorage.getItem('userData'))
   const { user } = useContext(AuthContext)
-  console.log(user)
   const [state, setState] = useState({
     companies: [],
     username: '',
@@ -50,12 +51,34 @@ const TableServerSide = () => {
   const applicationsData2 = [
     { id: 1, name: 'Auth Dashboard', roles: [{ name: 'Auth_Admin', id: 2 }] },
     { id: 2, name: 'EMS', roles: [{ name: 'Admin', id: 3 }] },
-    { id: 3, name: 'Samodrei', roles: [{ name: 'Admin', id: 3 },{ name: 'Tele_Marketer', id: 5 }, {name:"Tele_Marketer_Manager", id:6}] },
+    {
+      id: 3,
+      name: 'Samodrei',
+      roles: [
+        { name: 'Admin', id: 3 },
+        { name: 'Tele_Marketer', id: 5 },
+        { name: 'Tele_Marketer_Manager', id: 6 }
+      ]
+    },
 
-    { id: 4, name: 'Ascthem', roles: [{ name: 'Admin', id: 3 }, {name:"Manufacturer", id: 7}] },
-    { id: 5, name: 'Pharmacy Portal', roles: [{ name: 'Admin', id: 3 }, {name:"Support", id: 10}, {name:"Pharmacy", id:11}, {name:"Distributor", id:12}] }
-
-
+    {
+      id: 4,
+      name: 'Ascthem',
+      roles: [
+        { name: 'Admin', id: 3 },
+        { name: 'Manufacturer', id: 7 }
+      ]
+    },
+    {
+      id: 5,
+      name: 'Pharmacy Portal',
+      roles: [
+        { name: 'Admin', id: 3 },
+        { name: 'Support', id: 10 },
+        { name: 'Pharmacy', id: 11 },
+        { name: 'Distributor', id: 12 }
+      ]
+    }
   ]
   const [applicationsData, setApplicationsData] = useState(applicationsData2)
   const [selectedApp, setSelectedApp] = useState('')
@@ -71,6 +94,27 @@ const TableServerSide = () => {
   const [sort, setSort] = useState('asc')
   const [open, setOpen] = useState(false)
 
+  const handleEdit = row => {
+    // Populate the dialog with the details of the selected row
+
+    setState({
+      ...state,
+      username: row?.userName,
+      password: row?.password,
+      email: row?.email,
+      assignments: row?.access?.map(acs => {
+        return {
+          appId: acs.application?.id,
+          app: acs.application?.name,
+          role: acs?.role?.name
+        }
+      }),
+      selectedCompany: row?.company?.id
+    })
+    setIsUpdate(true) // Set the mode to update
+    setOpen(true) // Open the dialog
+  }
+
   const handleClickOpen = async (barcode, userId) => {
     // await axios.get(`${BASE_URL}product/getproduct/?barcode=${barcode}&userId=${userId}`).then(res => {
     //   if (res?.data) {
@@ -82,8 +126,16 @@ const TableServerSide = () => {
     setOpen(true)
   }
   const handleClose = () => {
-    setIsUpdate(false)
+    setState({
+      ...state,
+      username: '',
+      password: '',
+      email: '',
+      assignments: [],
+      selectedCompany: ''
+    })
     setOpen(false)
+    setIsUpdate(false)
   }
 
   const fetchCompanies = async () => {
@@ -201,7 +253,11 @@ const TableServerSide = () => {
   const handleAddAssignment = () => {
     if (selectedApp && selectedRole) {
       // Check for existing assignment of the same application
-      const isAlreadyAssigned = assignments.some(assign => assign.appId === selectedApp)
+      console.log(selectedApp)
+      console.log(assignments)
+      const isAlreadyAssigned = state.assignments.some(
+        assign => assign.appId === selectedApp && assign.role === selectedRole
+      )
       if (!isAlreadyAssigned) {
         const appDetails = applicationsData.find(app => app.id === selectedApp)
         const newAssignment = {
@@ -256,6 +312,17 @@ const TableServerSide = () => {
           </Typography>
         </Tooltip>
       )
+    },
+    {
+      flex: 0.05,
+      minWidth: 80,
+      headerName: 'Edit',
+      field: 'edit',
+      renderCell: params => (
+        <IconButton onClick={() => handleEdit(params.row)}>
+          <EditIcon />
+        </IconButton>
+      )
     }
   ]
 
@@ -305,6 +372,12 @@ const TableServerSide = () => {
     }
   }
 
+  const handleRemoveAssignment = index => {
+    const updatedAssignments = [...state.assignments]
+    updatedAssignments.splice(index, 1)
+    setState({ ...state, assignments: updatedAssignments })
+  }
+
   return (
     <>
       <Dialog
@@ -351,19 +424,21 @@ const TableServerSide = () => {
                         variant='standard'
                       />
                     </FormControl>
-                    <FormControl sx={{ width: 400, mb: 6 }}>
-                      <TextField
-                        required
-                        type='password'
-                        value={state.password}
-                        onChange={e => setState({ ...state, password: e.target.value })}
-                        id='standard-basic'
-                        name='password'
-                        label='Set Password'
-                        placeholder='Set password for user'
-                        variant='standard'
-                      />
-                    </FormControl>
+                    {!isUpdate && (
+                      <FormControl sx={{ width: 400, mb: 6 }}>
+                        <TextField
+                          required
+                          type='password'
+                          value={state.password}
+                          onChange={e => setState({ ...state, password: e.target.value })}
+                          id='standard-basic'
+                          name='password'
+                          label='Set Password'
+                          placeholder='Set password for user'
+                          variant='standard'
+                        />
+                      </FormControl>
+                    )}
                     <FormControl fullWidth margin='normal'>
                       <InputLabel id='company-select-label'>Select Company</InputLabel>
                       <Select
@@ -429,6 +504,13 @@ const TableServerSide = () => {
                         {state.assignments.map((assign, index) => (
                           <ListItem key={index} style={{ paddingLeft: '0px' }}>
                             <ListItemText primary={`${assign.app} - ${assign.role}`} />
+                            <Box
+                              ml={2}
+                              sx={{ cursor: 'pointer', ':hover': { color: 'red' } }}
+                              onClick={() => handleRemoveAssignment(index)}
+                            >
+                              x
+                            </Box>
                           </ListItem>
                         ))}
                       </List>

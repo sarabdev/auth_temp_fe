@@ -5,6 +5,9 @@ import FormSelect from 'mdi-material-ui/FormSelect'
 import CubeOutline from 'mdi-material-ui/CubeOutline'
 import LockOutline from 'mdi-material-ui/LockOutline'
 import HomeOutline from 'mdi-material-ui/HomeOutline'
+import ApplicationIcon from 'mdi-material-ui/Paperclip'
+import CompaniesIcon from 'mdi-material-ui/OfficeBuilding'
+import UsersIcon from 'mdi-material-ui/FaceAgent'
 import EmailOutline from 'mdi-material-ui/EmailOutline'
 import ShieldOutline from 'mdi-material-ui/ShieldOutline'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
@@ -20,60 +23,49 @@ import PackageVariantClosed from 'mdi-material-ui/PackageVariantClosed'
 import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 import CheckboxMarkedCircleOutline from 'mdi-material-ui/CheckboxMarkedCircleOutline'
 
-
 const navigation = () => {
-  const userData=JSON.parse(window.localStorage.getItem('userData'))
-console.log(userData)
-if(userData?.role=="Super_Admin"){
-  return [
-    {
-      title: "Applications",
-      icon:HomeOutline,
-      path:"/applications",
-     
-    },
-    {
-      title:'Companies',
-      icon:HomeOutline,
-      path:'/companies',
-      
-    },
-    {
-      title: "Users",
-      icon:HomeOutline,
-      path:"/users",
-     
-    },
-  ]
-}
-else if(userData?.role=="Auth_Admin"){
-  return [
-    {
-      title: "Applications",
-      icon:HomeOutline,
-      path:"/applications",
-     
-    },
-    {
-      title: "Users",
-      icon:HomeOutline,
-      path:"/users",
-     
-    },
-    
-  ]
-}
-else{
-  return [
-    {
-      title: "Applications",
-      icon:HomeOutline,
-      path:"/applications",
-     
-    }
-    
-  ]
-}
+  const userData = JSON.parse(window.localStorage.getItem('userData'))
+  console.log(userData)
+  if (userData?.role == 'Super_Admin') {
+    return [
+      {
+        title: 'Applications',
+        icon: ApplicationIcon,
+        path: '/applications'
+      },
+      {
+        title: 'Companies',
+        icon: CompaniesIcon,
+        path: '/companies'
+      },
+      {
+        title: 'Users',
+        icon: UsersIcon,
+        path: '/users'
+      }
+    ]
+  } else if (userData?.role == 'Auth_Admin') {
+    return [
+      {
+        title: 'Applications',
+        icon: HomeOutline,
+        path: '/applications'
+      },
+      {
+        title: 'Users',
+        icon: HomeOutline,
+        path: '/users'
+      }
+    ]
+  } else {
+    return [
+      {
+        title: 'Applications',
+        icon: HomeOutline,
+        path: '/applications'
+      }
+    ]
+  }
   // return [
   //   // {
   //   //   title: 'Users',
@@ -96,13 +88,13 @@ else{
   //   //   title:'Companies',
   //   //   icon:HomeOutline,
   //   //   path:'/filters',
-      
+
   //   // },
   //   // {
   //   //   title: "Users",
   //   //   icon:HomeOutline,
   //   //   path:"/users",
-     
+
   //   // },
   //   // {
   //   //   title:"Add Template",
@@ -113,14 +105,14 @@ else{
   //   //   title:'Templates',
   //   //   icon:HomeOutline,
   //   //   path:'/template'
-  //   // }, 
-    
+  //   // },
+
   //   //   {
   //   //     title:'Interesting Items',
   //   //     icon:HomeOutline,
   //   //     path:'/interesting-items'
   //   //   }
-    
+
   //   // {
   //   //   path: '/acl',
   //   //   action: 'read',
