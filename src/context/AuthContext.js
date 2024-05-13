@@ -65,6 +65,9 @@ const AuthProvider = ({ children }) => {
   }, [router.isReady]);
   useEffect(() => {
     const initAuth = async () => {
+      if(window.localStorage.getItem("returnUrl")){
+        redirectToLogin()
+      }
       console.log("initi auth")
       //setReturnUrl(router.query.returnUrl)
       //console.log(router.query.returnUrl)

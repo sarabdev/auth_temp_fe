@@ -50,7 +50,11 @@ const TableServerSide = () => {
   const applicationsData2 = [
     { id: 1, name: 'Auth Dashboard', roles: [{ name: 'Auth_Admin', id: 2 }] },
     { id: 2, name: 'EMS', roles: [{ name: 'Admin', id: 3 }] },
-    { id: 4, name: 'Ascthem', roles: [{ name: 'Admin', id: 3 }, {name:"Manufacturer", id: 7}] }
+    { id: 3, name: 'Samodrei', roles: [{ name: 'Admin', id: 3 },{ name: 'Tele_Marketer', id: 5 }, {name:"Tele_Marketer_Manager", id:6}] },
+
+    { id: 4, name: 'Ascthem', roles: [{ name: 'Admin', id: 3 }, {name:"Manufacturer", id: 7}] },
+    { id: 5, name: 'Pharmacy Portal', roles: [{ name: 'Admin', id: 3 }, {name:"Support", id: 10}, {name:"Pharmacy", id:11}, {name:"Distributor", id:12}] }
+
 
   ]
   const [applicationsData, setApplicationsData] = useState(applicationsData2)
@@ -165,6 +169,7 @@ const TableServerSide = () => {
           })
           .then(res => {
             setTotal(res.data.length)
+            console.log(res.data)
             const recordsWithSerial = res.data.map((record, index) => {
               return { ...record, serial: index + 1 }
             })
@@ -275,7 +280,16 @@ const TableServerSide = () => {
   const getRoleId = roleName => {
     const roleMap = {
       Auth_Admin: 2,
-      Admin: 3
+      Admin: 3,
+      User: 4,
+      Tele_Marketer: 5,
+      Mobile: 6,
+      Manufacturer: 7,
+      Tele_Marketer_Manager: 8,
+      Product_advocate: 9,
+      Support: 10,
+      Pharmacy: 11,
+      Distributor: 12
       // Add more mappings as needed
     }
     return roleMap[roleName] || null // Return null if no matching role ID is found
