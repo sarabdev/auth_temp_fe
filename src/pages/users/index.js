@@ -100,6 +100,7 @@ const TableServerSide = () => {
     setState({
       ...state,
       username: row?.userName,
+      id: row?.id,
       password: row?.password,
       email: row?.email,
       assignments: row?.access?.map(acs => {
@@ -165,6 +166,40 @@ const TableServerSide = () => {
     return data.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
   }
 
+  const handleUpdate=async e=>{
+    e.preventDefault()
+    console.log(state)
+    try{
+      const result = transformData(state.assignments);
+console.log(result)
+      // Assuming you have the user ID stored in state.userId
+      const userId = state.id;
+      
+      await axios.patch(
+        BASE_URL + `/users/EditUserBySuperAdmin/${userId}`,
+        {
+          email: state.email,
+          userName: state.username,
+          password: state.password,
+          access: state.assignments,
+          selectedCompany: state.selectedCompany
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${window.localStorage.getItem('accessToken')}`
+          }
+        }
+      );
+      toast.success('User updated successfully.', {
+        duration: 2000
+      })
+      handleClose()
+      fetchTableData()
+    }
+    catch(e){
+
+    }
+  }
   const handleSubmit = async e => {
     e.preventDefault()
     console.log(state)
@@ -254,7 +289,7 @@ const TableServerSide = () => {
     if (selectedApp && selectedRole) {
       // Check for existing assignment of the same application
       console.log(selectedApp)
-      console.log(assignments)
+      console.log(state.assignments)
       const isAlreadyAssigned = state.assignments.some(
         assign => assign.appId === selectedApp && assign.role === selectedRole
       )
@@ -391,7 +426,7 @@ const TableServerSide = () => {
           }
         }}
       >
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={isUpdate?handleUpdate:handleSubmit}>
           <DialogTitle id='alert-dialog-title'>{isUpdate ? 'Update User' : 'Add New User'}</DialogTitle>
           <DialogContent>
             <CardContent>

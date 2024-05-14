@@ -234,6 +234,25 @@ const Batches = () => {
     } catch (e) {}
   }
 
+  const handleUpdate = async details => {
+    console.log(details)
+    try {
+      await axios.put(BASE_URL + '/companies', {
+        id: details.id,
+        name: details.name,
+        address: details.address,
+        applicationIds: details.selectedApplications
+      })
+
+      toast.success('Company  added successfully.', {
+        duration: 2000
+      })
+      handleClose()
+      fetchTableData()
+    } catch (e) {}
+  }
+
+
   return (
     <>
       <Dialog
