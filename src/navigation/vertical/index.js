@@ -42,18 +42,23 @@ const navigation = () => {
         title: 'Users',
         icon: UsersIcon,
         path: '/users'
+      }, {
+
+        title: "Product Advocates",
+        icon: UsersIcon,
+        path: "/product_advocates"
       }
     ]
   } else if (userData?.role == 'Auth_Admin') {
     return [
       {
         title: 'Applications',
-        icon: HomeOutline,
+        icon: ApplicationIcon,
         path: '/applications'
       },
       {
         title: 'Users',
-        icon: HomeOutline,
+        icon: UsersIcon,
         path: '/users'
       }
     ]
@@ -61,7 +66,7 @@ const navigation = () => {
     return [
       {
         title: 'Applications',
-        icon: HomeOutline,
+        icon: ApplicationIcon,
         path: '/applications'
       }
     ]

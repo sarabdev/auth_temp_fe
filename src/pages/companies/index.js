@@ -58,6 +58,7 @@ import { countriesData } from 'src/store/countries'
 const Batches = () => {
   // ** State
   const initialState = {
+    id: null,
     name: '',
     address: '',
     selectedApplications: []
@@ -87,6 +88,7 @@ const Batches = () => {
   const handleEdit = row => {
     // Populate the dialog with the details of the selected row
     setCompanyDetails({
+      id: row.id,
       name: row.name,
       address: row.address,
       selectedApplications: row.applications.map(appId => appId.id)
@@ -97,6 +99,7 @@ const Batches = () => {
 
   const onSubmit = event => {
     event.preventDefault()
+    console.log(companyDetails)
     if (isUpdate) {
       handleUpdate(companyDetails)
     } else {
@@ -134,6 +137,30 @@ const Batches = () => {
     return data.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
   }
 
+  const handleDelete = async (id) => {
+    try {
+      let response = await axios.post(`${BASE_URL}/companies/delete_company/${id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem('accessToken')}`
+        }
+      });
+      if (!response?.data?.error) {
+        console.log(response.data)
+        toast.success("Company deleted successfully.", {
+          duration: 2000
+        });
+        fetchTableData(); // Ensure this function updates the table data appropriately
+      } else {
+        toast.error(response?.data?.message, {
+          duration: 2000
+        });
+      }
+    } catch (e) {
+      toast.error("Try again!", {
+        duration: 2000
+      });
+    }
+  }
   const fetchTableData = useCallback(
     async (sort, column) => {
       await axios
@@ -184,7 +211,7 @@ const Batches = () => {
     },
     {
       flex: 0.05,
-      minWidth: 80,
+      minWidth: 30,
       headerName: 'Edit',
       field: 'edit',
       renderCell: params => (
@@ -192,7 +219,17 @@ const Batches = () => {
           <EditIcon />
         </IconButton>
       )
-    }
+    },
+    {
+      flex: 0.2,
+      minWidth: 30,
+      headerName: 'Action',
+      field: 'action',
+      renderCell: params => (
+        <Button size="small" variant='contained' onClick={() => handleDelete(params.row.id)} >Delete</Button>
+
+      )
+    },
   ]
 
   const handleSortModel = newModel => {
@@ -231,7 +268,7 @@ const Batches = () => {
       })
       handleClose()
       fetchTableData()
-    } catch (e) {}
+    } catch (e) { }
   }
 
   const handleUpdate = async details => {
@@ -249,7 +286,7 @@ const Batches = () => {
       })
       handleClose()
       fetchTableData()
-    } catch (e) {}
+    } catch (e) { }
   }
 
 

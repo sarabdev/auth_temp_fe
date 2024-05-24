@@ -155,7 +155,7 @@ const TableServerSide = () => {
         )
         setApplicationsData(commonElements)
       } else setState({ ...state, companies: response.data })
-    } catch (e) {}
+    } catch (e) { }
   }
 
   useEffect(() => {
@@ -166,15 +166,15 @@ const TableServerSide = () => {
     return data.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
   }
 
-  const handleUpdate=async e=>{
+  const handleUpdate = async e => {
     e.preventDefault()
     console.log(state)
-    try{
+    try {
       const result = transformData(state.assignments);
-console.log(result)
+      console.log(result)
       // Assuming you have the user ID stored in state.userId
       const userId = state.id;
-      
+
       await axios.patch(
         BASE_URL + `/users/EditUserBySuperAdmin/${userId}`,
         {
@@ -196,7 +196,7 @@ console.log(result)
       handleClose()
       fetchTableData()
     }
-    catch(e){
+    catch (e) {
 
     }
   }
@@ -242,7 +242,7 @@ console.log(result)
       })
       handleClose()
       fetchTableData()
-    } catch (e) {}
+    } catch (e) { }
   }
 
   const fetchTableData = useCallback(
@@ -257,7 +257,7 @@ console.log(result)
           .then(res => {
             setTotal(res.data.length)
             console.log(res.data)
-            const recordsWithSerial = res.data.map((record, index) => {
+            const recordsWithSerial = res.data.filter(d => d.userName.length > 0).map((record, index) => {
               return { ...record, serial: index + 1 }
             })
             setRows(loadServerRows(page, recordsWithSerial))
@@ -285,6 +285,31 @@ console.log(result)
     fetchTableData(sort, sortColumn)
   }, [fetchTableData, sort, sortColumn])
 
+
+  const handleDelete = async (id) => {
+    try {
+      let response = await axios.post(`${BASE_URL}/users/delete_user/${id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem('accessToken')}`
+        }
+      });
+      if (!response?.data?.error) {
+        console.log(response.data)
+        toast.success("User deleted successfully.", {
+          duration: 2000
+        });
+        fetchTableData(); // Ensure this function updates the table data appropriately
+      } else {
+        toast.error(response?.data?.message, {
+          duration: 2000
+        });
+      }
+    } catch (e) {
+      toast.error("Try again!", {
+        duration: 2000
+      });
+    }
+  }
   const handleAddAssignment = () => {
     if (selectedApp && selectedRole) {
       // Check for existing assignment of the same application
@@ -358,7 +383,17 @@ console.log(result)
           <EditIcon />
         </IconButton>
       )
-    }
+    },
+    {
+      flex: 0.2,
+      minWidth: 30,
+      headerName: 'Action',
+      field: 'action',
+      renderCell: params => (
+        <Button size="small" variant='contained' onClick={() => handleDelete(params.row.id)} >Delete</Button>
+
+      )
+    },
   ]
 
   const handleSortModel = newModel => {
@@ -426,7 +461,7 @@ console.log(result)
           }
         }}
       >
-        <form onSubmit={isUpdate?handleUpdate:handleSubmit}>
+        <form onSubmit={isUpdate ? handleUpdate : handleSubmit}>
           <DialogTitle id='alert-dialog-title'>{isUpdate ? 'Update User' : 'Add New User'}</DialogTitle>
           <DialogContent>
             <CardContent>

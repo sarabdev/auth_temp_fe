@@ -20,7 +20,7 @@ const TableServerSide = () => {
   const router = useRouter()
   const [applications, setApplications] = useState([])
 
- 
+
 
   const fetchApplications = async () => {
     try {
@@ -70,20 +70,9 @@ const TableServerSide = () => {
             gap: '20px'
           }}
         >
-          {applications.map(card => (
-            // <Grid item xs={12} sm={6} md={4} key={card.id}>
-            // <Card sx={{ height: '100%' }}>
-            //   {' '}
-            //   {/* Inner Card */}
-            //   <CardActionArea onClick={() => handleCardClick(card.link)}>
-            //     <Typography variant='h6' sx={{ textAlign: 'center', padding: 3 }}>
-            //       <div style={{ display: 'flex', gap: '4px' }}>
-            //         <div style={{ marginTop: '0px' }}>{applicationIcons[card.name]}</div> <div>{card.name}</div>
-            //       </div>
-            //     </Typography>
-            //   </CardActionArea>
-            // </Card>
-            // </Grid>
+          {applications.filter(card => card.id !== 1).map(card => (
+
+
 
             <Card
               sx={{
